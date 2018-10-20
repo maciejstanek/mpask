@@ -1,6 +1,16 @@
 cmake_minimum_required(VERSION 3.8)
 project(mibparser)
 
+# find_package(BISON)
+# find_package(FLEX)
+FIND_PACKAGE(Boost 1.62 REQUIRED)
+# FIND_PACKAGE(Boost 1.62 COMPONENTS program_options REQUIRED )
+INCLUDE_DIRECTORIES(${Boost_INCLUDE_DIR})
+
+# BISON_TARGET(mibparser_parser parser.y ${CMAKE_CURRENT_BINARY_DIR}/parser.cxx)
+# FLEX_TARGET(mibparser_lexer lexer.l ${CMAKE_CURRENT_BINARY_DIR}/lexer.cxx)
+# ADD_FLEX_BISON_DEPENDENCY(mibparser_lexer mibparser_parser)
+
 file(GLOB SOURCES "*.cxx")
 # list(REMOVE_ITEM SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/main.cxx") # It is a lib, no nee for a main file
 add_library(mibparser STATIC ${SOURCES})
@@ -18,6 +28,7 @@ target_compile_features(mibparser PUBLIC cxx_std_17) # Since CMake 3.8
 target_compile_options(mibparser PUBLIC -Wall -Wextra -Wshadow -Wnon-virtual-dtor -pedantic)
 
 target_link_libraries(mibparser PUBLIC stdc++fs) # experimental/filesystem
+target_link_libraries(mibparser LINK_PUBLIC ${Boost_LIBRARIES})
 
 # No need for an exec: this is a lib. Moreover, I already have tests.
 # add_executable(main "main.cxx")
