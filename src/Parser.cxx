@@ -1,12 +1,10 @@
-#include "mibparser/Parser.hxx"
-
-#include "mibparser/ParserImpl.hxx"
+#include "mpask/Parser.hxx"
 
 #include <iostream>
 
 using namespace std;
 
-namespace mibparser {
+namespace mpask {
 
 void
 Parser::parse(std::istream&) const

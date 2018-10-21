@@ -2,7 +2,7 @@
 
 #include <sstream>
 
-namespace mibparser {
+namespace mpask {
 
 class Parser
 {

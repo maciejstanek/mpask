@@ -1,4 +1,4 @@
 cmake_minimum_required(VERSION 3.8)
-project(mibparser)
+project(mpask)
 
 add_subdirectory(googletest)

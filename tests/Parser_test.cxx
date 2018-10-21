@@ -1,10 +1,10 @@
-#include "mibparser/Parser.hxx"
+#include "mpask/Parser.hxx"
 
 #include <gtest/gtest.h>
 #include <sstream>
 
 using namespace std;
-using namespace mibparser;
+using namespace mpask;
 
 class Parser_test : public ::testing::Test
 {
