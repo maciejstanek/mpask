@@ -10,7 +10,6 @@
 #include <iostream>
 #include <string>
 #include <streambuf>
-#include <complex>
 
 using namespace std;
 
@@ -27,6 +26,7 @@ namespace mpask
       definition =
         objectIdentifierDefinition
         | objectTypeDefinition
+        | dataTypeDefinition
         ;
 
       objectIdentifierDefinition =
@@ -92,16 +92,66 @@ namespace mpask
         >> longText
         ;
 
+      restriction = // TODO: Should not skip spaces.
+        qi::char_('(')
+        >> (
+          rangeRestriction
+          | sizeRestriction
+          )
+        >> qi::char_(')')
+        ;
+
+      rangeRestriction = // TODO: Should not skip spaces.
+        qi::int_
+        >> qi::lit("..")
+        >> qi::int_
+        ;
+
+      sizeRestriction = // TODO: Should not skip spaces.
+        qi::lit("SIZE")
+        >> qi::int_
+        ;
+
+      simpleDataType =
+        (qi::lit("OCTET") >> qi::lit("STRING"))
+        | qi::lit("INTEGER")
+        | (qi::lit("OBJECT") >> qi::lit("IDENTIFIER"))
+        | qi::lit("NULL")
+        ;
+
+      dataTypeDefinition =
+        identifier
+        >> qi::lit("::=")
+        >> qi::char_('[') >> visibility >> qi::int_ >> qi::char_(']')
+        >> explicity
+        >> simpleDataType
+        >> -sizeRestriction
+        ;
+
+      visibility =
+        qi::lit("UNIVERSAL")
+        | qi::lit("APPLICATION")
+        | qi::lit("CONTEXT-SPECIFIC")
+        | qi::lit("PRIVATE")
+        ;
+
+      explicity =
+        qi::lit("IMPLICIT")
+        | qi::lit("EXPLICIT")
+        ;
+
+      // TODO: Implement 'SEQUENCE' oraz 'SEQUENCE OF'.
+
+      // NOTE: Useful debugging function
       // qi::debug(definition);
-      // qi::debug(objectIdentifierDefinition);
-      // qi::debug(objectTypeDefinition);
-      // qi::debug(identifier);
     }
 
     qi::rule<Iterator, ascii::space_type> definition, syntaxProperty,
       accessProperty, statusProperty, descriptionProperty,
       objectTypeProperty, definitionAddress, objectIdentifierDefinition,
-      objectTypeDefinition, identifier, longText;
+      objectTypeDefinition, identifier, longText, dataTypeDefinition,
+      simpleDataType, restriction, sizeRestriction, rangeRestriction,
+      visibility, explicity;
   };
 
   void

@@ -75,6 +75,28 @@ TEST_F(Parser_test, long_object_type)
   EXPECT_NO_THROW(p.parse(s));
 }
 
+TEST_F(Parser_test, simple_data_type)
+{
+  Parser p;
+  stringstream s {R"(
+    TimeTicks ::=
+      [APPLICATION 3]
+        IMPLICIT INTEGER
+  )"};
+  EXPECT_NO_THROW(p.parse(s));
+}
+
+TEST_F(Parser_test, long_data_type)
+{
+  Parser p;
+  stringstream s {R"(
+    IpAddress ::=
+      [APPLICATION 0]
+        IMPLICIT OCTET STRING (SIZE (4))
+  )"};
+  EXPECT_NO_THROW(p.parse(s));
+}
+
 TEST_F(Parser_test, negative)
 {
   Parser p;
