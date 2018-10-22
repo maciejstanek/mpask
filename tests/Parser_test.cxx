@@ -33,7 +33,7 @@ TEST_F(Parser_test, simple_object_identifier)
 {
   Parser p;
   stringstream s {R"(
-    abc OBJECT IDENTIFIER ::= { def 1 }
+    system OBJECT IDENTIFIER ::= { mib-2 1 }
   )"};
   EXPECT_NO_THROW(p.parse(s));
 }
@@ -42,7 +42,35 @@ TEST_F(Parser_test, long_object_identifier)
 {
   Parser p;
   stringstream s {R"(
-    abc OBJECT IDENTIFIER ::= { def ghi(13) jkl(1) 213 }
+    internet OBJECT IDENTIFIER ::= { iso org(3) dod(6) 1 }
+  )"};
+  // TODO: The parser should not allow for spaces before and inside the parenthesis.
+  EXPECT_NO_THROW(p.parse(s));
+}
+
+TEST_F(Parser_test, simple_object_type)
+{
+  Parser p;
+  stringstream s {R"(
+    sysUpTime OBJECT-TYPE
+      ::= { system 3 }
+  )"};
+  EXPECT_NO_THROW(p.parse(s));
+}
+
+TEST_F(Parser_test, long_object_type)
+{
+  Parser p;
+  stringstream s {R"(
+    sysUpTime OBJECT-TYPE
+      SYNTAX TimeTicks
+      ACCESS read-only
+      STATUS mandatory
+      DESCRIPTION
+        "The time (in hundredths of a second) since the
+        network management portion of the system was last
+        re-initialized."
+      ::= { system 3 }
   )"};
   EXPECT_NO_THROW(p.parse(s));
 }

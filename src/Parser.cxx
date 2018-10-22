@@ -6,6 +6,7 @@
 #include <boost/spirit/include/phoenix_core.hpp>
 #include <boost/spirit/include/phoenix_operator.hpp>
 #include <boost/spirit/include/qi_lexeme.hpp>
+#include <boost/spirit/include/qi_no_skip.hpp>
 #include <iostream>
 #include <string>
 #include <streambuf>
@@ -19,48 +20,88 @@ namespace mpask
   namespace ascii = boost::spirit::ascii;
 
   template <typename Iterator>
-  struct ObjectIdentifierParser : qi::grammar<Iterator, ascii::space_type>
+  struct DefinitionParser : qi::grammar<Iterator, ascii::space_type>
   {
-    ObjectIdentifierParser() : ObjectIdentifierParser::base_type(objectIdentifier)
+    DefinitionParser() : DefinitionParser::base_type(definition)
     {
-      // qi::uint_type uint_;
+      definition =
+        objectIdentifierDefinition
+        | objectTypeDefinition
+        ;
 
-      // expression =
-      //   term
-      //   >> *(   ('+' >> term)
-      //       |   ('-' >> term)
-      //       )
-      //   ;
-
-      // term =
-      //   factor
-      //   >> *(   ('*' >> factor)
-      //       |   ('/' >> factor)
-      //       )
-      //   ;
-
-      // factor =
-      //   uint_
-      //   |   '(' >> expression >> ')'
-      //   |   ('-' >> factor)
-      //   |   ('+' >> factor)
-      //   ;
-
-			objectIdentifier =
-				qi::lexeme[+qi::alnum]
-				>> qi::lit("OBJECT")
-				>> qi::lit("IDENTIFIER")
+      objectIdentifierDefinition =
+        identifier
+        >> qi::lit("OBJECT")
+        >> qi::lit("IDENTIFIER")
         >> qi::lit("::=")
-        >> qi::lit("{")
-        >> qi::lexeme[+qi::alnum]
-        >> *qi::lexeme[+qi::alnum >> '(' >> qi::int_ >> ')']
+        >> definitionAddress
+        ;
+
+      definitionAddress =
+        qi::lit("{")
+        >> identifier
+        >> *(identifier >> '(' >> qi::int_ >> ')') // TODO: Probably should somehow disable spaces.
         >> qi::int_
         >> qi::lit("}")
-				;
+        ;
+
+      identifier =
+        qi::lexeme[+(qi::alnum | qi::char_('_') | qi::char_('-'))]
+        ;
+
+      longText =
+        qi::lexeme[
+          qi::char_('"')
+          >> *(qi::char_ - qi::char_('"'))
+          >> qi::char_('"')
+          ]
+        ;
+
+      objectTypeDefinition =
+        identifier
+        >> qi::lit("OBJECT-TYPE")
+        >> *objectTypeProperty
+        >> qi::lit("::=")
+        >> definitionAddress
+        ;
+
+      objectTypeProperty =
+        syntaxProperty
+        | accessProperty
+        | statusProperty
+        | descriptionProperty
+        ;
+
+      syntaxProperty =
+        qi::lit("SYNTAX")
+        >> identifier
+        ;
+
+      accessProperty =
+        qi::lit("ACCESS")
+        >> identifier
+        ;
+
+      statusProperty =
+        qi::lit("STATUS")
+        >> identifier
+        ;
+
+      descriptionProperty =
+        qi::lit("DESCRIPTION")
+        >> longText
+        ;
+
+      // qi::debug(definition);
+      // qi::debug(objectIdentifierDefinition);
+      // qi::debug(objectTypeDefinition);
+      // qi::debug(identifier);
     }
 
-    // qi::rule<Iterator, ascii::space_type> expression, term, factor;
-    qi::rule<Iterator, ascii::space_type> objectIdentifier;
+    qi::rule<Iterator, ascii::space_type> definition, syntaxProperty,
+      accessProperty, statusProperty, descriptionProperty,
+      objectTypeProperty, definitionAddress, objectIdentifierDefinition,
+      objectTypeDefinition, identifier, longText;
   };
 
   void
@@ -70,10 +111,10 @@ namespace mpask
     //        It would be nice to have it source from std::istream.
     string buffer {istreambuf_iterator<char>(input), istreambuf_iterator<char>()};
 
-		// SANDBOX
+    // SANDBOX
     boost::spirit::ascii::space_type space;
-    ObjectIdentifierParser<string::const_iterator> parser;
-		string::const_iterator iter = buffer.begin();
+    DefinitionParser<string::const_iterator> parser;
+    string::const_iterator iter = buffer.begin();
     string::const_iterator end = buffer.end();
     bool status = phrase_parse(iter, end, parser, space);
     if (status == false) {
