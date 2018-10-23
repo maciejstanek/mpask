@@ -79,6 +79,16 @@ TEST_F(Parser_test, simple_data_type)
 {
   Parser p;
   stringstream s {R"(
+    DisplayString ::=
+      OCTET STRING
+  )"};
+  EXPECT_NO_THROW(p.parse(s));
+}
+
+TEST_F(Parser_test, long_data_type_no_range)
+{
+  Parser p;
+  stringstream s {R"(
     TimeTicks ::=
       [APPLICATION 3]
         IMPLICIT INTEGER

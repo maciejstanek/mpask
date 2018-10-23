@@ -122,8 +122,8 @@ namespace mpask
       dataTypeDefinition =
         identifier
         >> qi::lit("::=")
-        >> qi::char_('[') >> visibility >> qi::int_ >> qi::char_(']')
-        >> explicity
+        >> -(qi::char_('[') >> visibility >> qi::int_ >> qi::char_(']'))
+        >> -explicity
         >> simpleDataType
         >> -sizeRestriction
         ;
