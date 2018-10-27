@@ -1,6 +1,7 @@
 #include "mpask/Parser.hxx"
 
 #include "mpask/Exception.hxx"
+#include "mpask/CommentSkipper.hxx"
 
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/phoenix_core.hpp>
@@ -159,7 +160,12 @@ namespace mpask
   {
     // FIXME: Boost Spirit parser requires std::string as an input.
     //        It would be nice to have it source from std::istream.
-    string buffer {istreambuf_iterator<char>(input), istreambuf_iterator<char>()};
+    stringstream strippedInput;
+    CommentSkipper{}.skip(input, strippedInput);
+    string buffer {
+      istreambuf_iterator<char>(strippedInput),
+      istreambuf_iterator<char>()
+    };
 
     // SANDBOX
     boost::spirit::ascii::space_type space;

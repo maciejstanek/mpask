@@ -113,3 +113,13 @@ TEST_F(Parser_test, negative)
   stringstream s {R"(tf sdohf kjdsf)"};
   EXPECT_THROW(p.parse(s), Exception);
 }
+
+TEST_F(Parser_test, skipping_comments)
+{
+  Parser p;
+  stringstream s {R"(
+    DisplayString ::= -- RANDOM COMMENT
+      OCTET STRING
+  )"};
+  EXPECT_NO_THROW(p.parse(s));
+}

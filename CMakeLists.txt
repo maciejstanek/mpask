@@ -1,5 +1,19 @@
 cmake_minimum_required(VERSION 3.8)
 project(mpask)
+
+function(remove_vim_swap_files FILES PRUNED_FILES_VAR)
+  set(PRUNED_FILES "")
+  foreach(FILE ${FILES})
+    string(REGEX MATCH "^.*\\.([^.]*)$" -> ${FILE}) # Cannot use CMake 'file' function as it extracts the longest extension
+    set(FILE_EXT ${CMAKE_MATCH_1})
+    get_filename_component(FILE_NAME ${FILE} NAME)
+    if(NOT ${FILE_EXT} STREQUAL "swp" AND NOT ${FILE_NAME} STREQUAL "CMakeLists.txt")
+      list(APPEND PRUNED_FILES ${FILE})
+    endif()
+  endforeach(FILE)
+  set(${PRUNED_FILES_VAR} "${PRUNED_FILES}" PARENT_SCOPE)
+endfunction()
+
 add_subdirectory(src)
 add_subdirectory(external)
 enable_testing()

@@ -18,4 +18,4 @@ foreach(SOURCE_FILE ${SOURCE_FILES})
   endif()
 endforeach(SOURCE_FILE)
 
-# file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/in DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
+add_subdirectory(resources)
