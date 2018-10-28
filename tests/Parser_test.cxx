@@ -4,6 +4,7 @@
 
 #include <gtest/gtest.h>
 #include <sstream>
+#include <fstream>
 
 using namespace std;
 using namespace mpask;
@@ -122,4 +123,12 @@ TEST_F(Parser_test, skipping_comments)
       OCTET STRING
   )"};
   EXPECT_NO_THROW(p.parse(s));
+}
+
+TEST_F(Parser_test, rfc1213_mib_txt)
+{
+  Parser p;
+  ifstream s {"resources/RFC1213-MIB.txt"};
+  // EXPECT_NO_THROW(p.parse(s));
+  p.parse(s);
 }

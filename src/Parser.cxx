@@ -22,12 +22,39 @@ namespace mpask
   template <typename Iterator>
   struct DefinitionParser : qi::grammar<Iterator, ascii::space_type>
   {
-    DefinitionParser() : DefinitionParser::base_type(definition)
+    DefinitionParser() : DefinitionParser::base_type(entryPoint)
     {
+      entryPoint =
+        +definition
+        ;
+
       definition =
         objectIdentifierDefinition
         | objectTypeDefinition
         | dataTypeDefinition
+        | importDefinition
+        | nestingDefinition
+        ;
+
+      importDefinition =
+        qi::lit("IMPORTS")
+        >> +importList
+        >> qi::lit(";")
+        ;
+
+      importList =
+        identifier % qi::lit(",")
+        >> qi::lit("FROM")
+        >> identifier
+        ;
+
+      nestingDefinition =
+        identifier
+        >> qi::lit("DEFINITIONS")
+        >> qi::lit("::=")
+        >> qi::lit("BEGIN")
+        >> *definition
+        >> qi::lit("END")
         ;
 
       objectIdentifierDefinition =
@@ -38,6 +65,7 @@ namespace mpask
         >> definitionAddress
         ;
 
+      definitionAddress.name("definitionAddress");
       definitionAddress =
         qi::lit("{")
         >> identifier
@@ -46,10 +74,12 @@ namespace mpask
         >> qi::lit("}")
         ;
 
+      identifier.name("identifier");
       identifier =
         qi::lexeme[+(qi::alnum | qi::char_('_') | qi::char_('-'))]
         ;
 
+      longText.name("longText");
       longText =
         qi::lexeme[
           qi::char_('"')
@@ -58,6 +88,7 @@ namespace mpask
           ]
         ;
 
+      objectTypeDefinition.name("objectTypeDefinition");
       objectTypeDefinition =
         identifier
         >> qi::lit("OBJECT-TYPE")
@@ -66,6 +97,7 @@ namespace mpask
         >> definitionAddress
         ;
 
+      objectTypeProperty.name("objectTypeProperty");
       objectTypeProperty =
         syntaxProperty
         | accessProperty
@@ -73,9 +105,41 @@ namespace mpask
         | descriptionProperty
         ;
 
+      syntaxProperty.name("syntaxProperty");
       syntaxProperty =
         qi::lit("SYNTAX")
-        >> identifier
+        >> (
+          (qi::lit("OBJECT") >> qi::lit("IDENTIFIER"))
+          | ((simpleDataType | identifier) >> -restriction)
+          )
+        ;
+
+      restriction.name("restriction");
+      restriction =
+        qi::char_('(')
+        >> (
+          rangeRestriction
+          | sizeRestriction
+          )
+        >> qi::char_(')')
+        ;
+
+      rangeRestriction.name("rangeRestriction");
+      rangeRestriction =
+        qi::int_
+        >> qi::lit("..")
+        >> qi::int_
+        ;
+
+      sizeRestriction.name("sizeRestriction");
+      sizeRestriction =
+        qi::lit("SIZE")
+        >> qi::char_('(')
+        >> (
+          rangeRestriction
+          | qi::int_
+          )
+        >> qi::char_(')')
         ;
 
       accessProperty =
@@ -93,26 +157,6 @@ namespace mpask
         >> longText
         ;
 
-      restriction = // TODO: Should not skip spaces.
-        qi::char_('(')
-        >> (
-          rangeRestriction
-          | sizeRestriction
-          )
-        >> qi::char_(')')
-        ;
-
-      rangeRestriction = // TODO: Should not skip spaces.
-        qi::int_
-        >> qi::lit("..")
-        >> qi::int_
-        ;
-
-      sizeRestriction = // TODO: Should not skip spaces.
-        qi::lit("SIZE")
-        >> qi::int_
-        ;
-
       simpleDataType =
         (qi::lit("OCTET") >> qi::lit("STRING"))
         | qi::lit("INTEGER")
@@ -126,7 +170,7 @@ namespace mpask
         >> -(qi::char_('[') >> visibility >> qi::int_ >> qi::char_(']'))
         >> -explicity
         >> simpleDataType
-        >> -sizeRestriction
+        >> -restriction
         ;
 
       visibility =
@@ -144,15 +188,23 @@ namespace mpask
       // TODO: Implement 'SEQUENCE' oraz 'SEQUENCE OF'.
 
       // NOTE: Useful debugging function
-      // qi::debug(definition);
+      qi::debug(entryPoint);
+      qi::debug(nestingDefinition);
+      qi::debug(definition);
+      qi::debug(restriction);
+      qi::debug(objectTypeProperty);
+      qi::debug(syntaxProperty);
+      qi::debug(sizeRestriction);
+      qi::debug(rangeRestriction);
     }
 
     qi::rule<Iterator, ascii::space_type> definition, syntaxProperty,
       accessProperty, statusProperty, descriptionProperty,
       objectTypeProperty, definitionAddress, objectIdentifierDefinition,
       objectTypeDefinition, identifier, longText, dataTypeDefinition,
-      simpleDataType, restriction, sizeRestriction, rangeRestriction,
-      visibility, explicity;
+      simpleDataType, restriction, visibility, explicity, entryPoint,
+      nestingDefinition, importList, importDefinition, sizeRestriction,
+      rangeRestriction;
   };
 
   void
@@ -167,7 +219,6 @@ namespace mpask
       istreambuf_iterator<char>()
     };
 
-    // SANDBOX
     boost::spirit::ascii::space_type space;
     DefinitionParser<string::const_iterator> parser;
     string::const_iterator iter = buffer.begin();
