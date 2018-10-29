@@ -34,6 +34,26 @@ namespace mpask
         | dataTypeDefinition
         | importDefinition
         | nestingDefinition
+        | sequenceDefinition
+        ;
+
+      sequenceDefinition =
+        identifier
+        >> qi::lit("::=")
+        >> qi::lit("SEQUENCE")
+        >> qi::char_('{')
+        >> sequenceElement % qi::char_(',')
+        >> qi::char_('}')
+        ;
+
+      sequenceElement =
+        identifier
+        >> (
+          objectIdentifierLabel
+          | simpleDataType
+          | identifier
+          )
+        >> -restriction
         ;
 
       importDefinition =
@@ -73,7 +93,7 @@ namespace mpask
       definitionAddress =
         qi::lit("{")
         >> identifier
-        >> *(identifier >> '(' >> qi::int_ >> ')') // TODO: Probably should somehow disable spaces.
+        >> *namedIndex // TODO: Probably should somehow disable spaces.
         >> qi::int_
         >> qi::lit("}")
         ;
@@ -114,7 +134,7 @@ namespace mpask
       indexProperty =
         qi::lit("INDEX")
         >> qi::char_('{')
-        >> identifier
+        >> identifier % ','
         >> qi::char_('}')
         ;
 
@@ -176,9 +196,25 @@ namespace mpask
 
       simpleDataType =
         (qi::lit("OCTET") >> qi::lit("STRING"))
-        | qi::lit("INTEGER")
+        | integer
         | objectIdentifierLabel
         | qi::lit("NULL")
+        ;
+
+      integer =
+        qi::lit("INTEGER")
+        >> -(
+          qi::char_('{')
+          >> namedIndex % qi::char_(',')
+          >> qi::char_('}')
+          )
+        ;
+
+      namedIndex =
+        identifier
+        >> '('
+        >> qi::int_
+        >> ')' // TODO: Probably should somehow disable spaces.
         ;
 
       dataTypeDefinition =
@@ -202,18 +238,16 @@ namespace mpask
         | qi::lit("EXPLICIT")
         ;
 
-      // TODO: Implement 'SEQUENCE' oraz 'SEQUENCE OF'.
-
       // NOTE: Useful debugging function
-      qi::debug(entryPoint);
-      qi::debug(nestingDefinition);
-      qi::debug(definition);
-      qi::debug(restriction);
-      qi::debug(objectTypeProperty);
-      qi::debug(syntaxProperty);
-      qi::debug(sizeRestriction);
-      qi::debug(rangeRestriction);
-      qi::debug(sequenceOf);
+      /* qi::debug(entryPoint); */
+      /* qi::debug(nestingDefinition); */
+      /* qi::debug(definition); */
+      /* qi::debug(restriction); */
+      /* qi::debug(objectTypeProperty); */
+      /* qi::debug(syntaxProperty); */
+      /* qi::debug(sizeRestriction); */
+      /* qi::debug(rangeRestriction); */
+      /* qi::debug(sequenceOf); */
     }
 
     qi::rule<Iterator, ascii::space_type> definition, syntaxProperty,
@@ -222,7 +256,8 @@ namespace mpask
       objectTypeDefinition, identifier, longText, dataTypeDefinition,
       simpleDataType, restriction, visibility, explicity, entryPoint,
       nestingDefinition, importList, importDefinition, sizeRestriction,
-      rangeRestriction, objectIdentifierLabel, sequenceOf, indexProperty;
+      rangeRestriction, objectIdentifierLabel, sequenceOf, indexProperty,
+      sequenceDefinition, sequenceElement, integer, namedIndex;
   };
 
   void
