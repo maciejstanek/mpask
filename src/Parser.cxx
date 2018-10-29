@@ -59,10 +59,14 @@ namespace mpask
 
       objectIdentifierDefinition =
         identifier
-        >> qi::lit("OBJECT")
-        >> qi::lit("IDENTIFIER")
+        >> objectIdentifierLabel
         >> qi::lit("::=")
         >> definitionAddress
+        ;
+
+      objectIdentifierLabel =
+        qi::lit("OBJECT")
+        >> qi::lit("IDENTIFIER")
         ;
 
       definitionAddress.name("definitionAddress");
@@ -103,15 +107,28 @@ namespace mpask
         | accessProperty
         | statusProperty
         | descriptionProperty
+        | indexProperty
+        ;
+
+      indexProperty.name("indexProperty");
+      indexProperty =
+        qi::lit("INDEX")
+        >> qi::char_('{')
+        >> identifier
+        >> qi::char_('}')
         ;
 
       syntaxProperty.name("syntaxProperty");
       syntaxProperty =
         qi::lit("SYNTAX")
-        >> (
-          (qi::lit("OBJECT") >> qi::lit("IDENTIFIER"))
-          | ((simpleDataType | identifier) >> -restriction)
-          )
+        >> ((sequenceOf | simpleDataType | identifier) >> -restriction)
+        ;
+
+      sequenceOf.name("sequenceOf");
+      sequenceOf =
+        qi::lit("SEQUENCE")
+        >> qi::lit("OF")
+        >> identifier
         ;
 
       restriction.name("restriction");
@@ -160,7 +177,7 @@ namespace mpask
       simpleDataType =
         (qi::lit("OCTET") >> qi::lit("STRING"))
         | qi::lit("INTEGER")
-        | (qi::lit("OBJECT") >> qi::lit("IDENTIFIER"))
+        | objectIdentifierLabel
         | qi::lit("NULL")
         ;
 
@@ -196,6 +213,7 @@ namespace mpask
       qi::debug(syntaxProperty);
       qi::debug(sizeRestriction);
       qi::debug(rangeRestriction);
+      qi::debug(sequenceOf);
     }
 
     qi::rule<Iterator, ascii::space_type> definition, syntaxProperty,
@@ -204,7 +222,7 @@ namespace mpask
       objectTypeDefinition, identifier, longText, dataTypeDefinition,
       simpleDataType, restriction, visibility, explicity, entryPoint,
       nestingDefinition, importList, importDefinition, sizeRestriction,
-      rangeRestriction;
+      rangeRestriction, objectIdentifierLabel, sequenceOf, indexProperty;
   };
 
   void
