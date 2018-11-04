@@ -2,12 +2,10 @@
 
 #include "mpask/Exception.hxx"
 #include "mpask/CommentSkipper.hxx"
+#include "mpask/Definition.hxx"
 
 #include <boost/spirit/include/qi.hpp>
-#include <boost/spirit/include/phoenix_core.hpp>
-#include <boost/spirit/include/phoenix_operator.hpp>
 #include <boost/spirit/include/qi_lexeme.hpp>
-#include <boost/spirit/include/qi_no_skip.hpp>
 #include <iostream>
 #include <string>
 #include <streambuf>
