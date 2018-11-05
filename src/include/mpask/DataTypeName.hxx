@@ -1,29 +1,29 @@
 #pragma once
 
-#include "mpask/Restriction.hxx"
-#include "mpask/DataTypeName.hxx"
-
 #include <boost/fusion/adapted/struct.hpp>
 #include <boost/fusion/adapted/struct/adapt_struct.hpp>
 #include <boost/fusion/include/adapt_struct.hpp>
 #include <string>
-#include <map> // Ordered
 
 namespace mpask {
 
-typedef std::map<std::string, DataTypeName> map_string_DataTypeName;
-
-struct SequenceDeclaration
+struct DataTypeName
 {
   std::string name;
-  map_string_DataTypeName sequence;
+  bool isInteger {false};
+  bool isOctetString {false};
+  bool isObjectIdentifier {false};
+  bool isNull {false};
 };
 
 }
 
 // TODO: Is it needed?
 BOOST_FUSION_ADAPT_STRUCT(
-  mpask::SequenceDeclaration,
+  mpask::DataTypeName,
   (std::string, name)
-  (mpask::map_string_DataTypeName, sequence)
+  (bool, isSequence)
+  (bool, isOctetString)
+  (bool, isObjectIdentifier)
+  (bool, isNull)
 )

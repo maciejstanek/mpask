@@ -1,6 +1,7 @@
 #pragma once
 
 #include "mpask/SequenceDeclaration.hxx"
+#include "mpask/DataTypeNameGrammar.hxx"
 
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/qi_lexeme.hpp>
@@ -45,23 +46,19 @@ namespace mpask
 
       sequenceElement =
         name
-        >> valueName
+        >> dataTypeNameGrammar
         ;
 
       name =
         +(alnum | char_('_') | char_('-'))
         ;
-
-      valueName =
-        lit("OBJECT IDENTIFIER") [_val = std::string("OBJECT IDENTIFIER")]
-        | name [_val = _1]
-        ;
     }
 
+    DataTypeNameGrammar<Iterator> dataTypeNameGrammar;
     SequenceDeclaration sequenceDeclarationInst;
     boost::spirit::qi::rule<Iterator, SequenceDeclaration(), boost::spirit::ascii::space_type> sequenceDeclaration;
-    boost::spirit::qi::rule<Iterator, std::pair<std::string, std::string>(), boost::spirit::ascii::space_type> sequenceElement;
-    boost::spirit::qi::rule<Iterator, std::map<std::string, std::string>(), boost::spirit::ascii::space_type> sequenceElements;
-    boost::spirit::qi::rule<Iterator, std::string()> name, valueName;
+    boost::spirit::qi::rule<Iterator, std::pair<std::string, DataTypeName>(), boost::spirit::ascii::space_type> sequenceElement;
+    boost::spirit::qi::rule<Iterator, std::map<std::string, DataTypeName>(), boost::spirit::ascii::space_type> sequenceElements;
+    boost::spirit::qi::rule<Iterator, std::string()> name;
   };
 }

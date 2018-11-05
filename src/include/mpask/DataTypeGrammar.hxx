@@ -3,6 +3,7 @@
 #include "mpask/RestrictionGrammar.hxx"
 #include "mpask/IntegerValuesMapGrammar.hxx"
 #include "mpask/DataType.hxx"
+#include "mpask/DataTypeNameGrammar.hxx"
 
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/qi_lexeme.hpp>
@@ -37,7 +38,7 @@ namespace mpask
 
       dataType =
         -sequenceOf
-        >> dataTypeTag [boost::phoenix::ref(dataTypeInst.name) = _1]
+        >> dataTypeNameGrammar [boost::phoenix::ref(dataTypeInst.name) = _1]
         >> -restrictionGrammar [boost::phoenix::ref(dataTypeInst.restriction) = _1]
         >> -integerValuesMapGrammar [boost::phoenix::ref(dataTypeInst.integerValues) = _1]
         >> eps [_val = boost::phoenix::ref(dataTypeInst)]
@@ -48,11 +49,6 @@ namespace mpask
         >> lit("OF") [boost::phoenix::ref(dataTypeInst.isSequence) = true]
         ;
 
-      dataTypeTag =
-        (lit("OBJECT IDENTIFIER")) [_val = std::string("OBJECT IDENTIFIER")] // FIXME: Only one space allowed.
-        | name [_val = _1]
-        ;
-
       name =
         +(alnum | char_('_') | char_('-'))
         ;
@@ -61,8 +57,9 @@ namespace mpask
     DataType dataTypeInst;
     RestrictionGrammar<Iterator> restrictionGrammar;
     IntegerValuesMapGrammar<Iterator> integerValuesMapGrammar;
+    DataTypeNameGrammar<Iterator> dataTypeNameGrammar;
     boost::spirit::qi::rule<Iterator, DataType(), boost::spirit::ascii::space_type> dataType;
-    boost::spirit::qi::rule<Iterator, std::string()> name, dataTypeTag;
+    boost::spirit::qi::rule<Iterator, std::string()> name;
     boost::spirit::qi::rule<Iterator, boost::spirit::ascii::space_type> sequenceOf;
   };
 }

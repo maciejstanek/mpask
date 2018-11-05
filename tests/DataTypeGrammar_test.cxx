@@ -29,7 +29,7 @@ TEST_F(DataTypeGrammar_test, basic)
   string input {"INTEGER"};
   auto [status, result] = parse(input);
   EXPECT_EQ(status, true);
-  EXPECT_EQ(result.name, "INTEGER"s);
+  EXPECT_EQ(result.name.name, "INTEGER"s);
   EXPECT_EQ(result.isSequence, false);
   EXPECT_EQ(result.restriction.left, 0);
   EXPECT_EQ(result.restriction.right, 0);
@@ -43,7 +43,7 @@ TEST_F(DataTypeGrammar_test, basic_2)
   string input {"abc"};
   auto [status, result] = parse(input);
   EXPECT_EQ(status, true);
-  EXPECT_EQ(result.name, "abc"s);
+  EXPECT_EQ(result.name.name, "abc"s);
   EXPECT_EQ(result.isSequence, false);
   EXPECT_EQ(result.restriction.left, 0);
   EXPECT_EQ(result.restriction.right, 0);
@@ -57,7 +57,7 @@ TEST_F(DataTypeGrammar_test, sequence_of)
   string input {"SEQUENCE OF abc"};
   auto [status, result] = parse(input);
   EXPECT_EQ(status, true);
-  EXPECT_EQ(result.name, "abc"s);
+  EXPECT_EQ(result.name.name, "abc"s);
   EXPECT_EQ(result.isSequence, true);
   EXPECT_EQ(result.restriction.left, 0);
   EXPECT_EQ(result.restriction.right, 0);
@@ -72,7 +72,7 @@ TEST_F(DataTypeGrammar_test, integer_with_values)
   string input {"INTEGER {a(1),b(2)}"};
   auto [status, result] = parse(input);
   EXPECT_EQ(status, true);
-  EXPECT_EQ(result.name, "INTEGER"s);
+  EXPECT_EQ(result.name.name, "INTEGER"s);
   EXPECT_EQ(result.isSequence, false);
   EXPECT_EQ(result.restriction.left, 0);
   EXPECT_EQ(result.restriction.right, 0);
@@ -86,7 +86,7 @@ TEST_F(DataTypeGrammar_test, string)
   string input {"DisplayString (SIZE (1..10))"};
   auto [status, result] = parse(input);
   EXPECT_EQ(status, true);
-  EXPECT_EQ(result.name, "DisplayString"s);
+  EXPECT_EQ(result.name.name, "DisplayString"s);
   EXPECT_EQ(result.isSequence, false);
   EXPECT_EQ(result.restriction.left, 1);
   EXPECT_EQ(result.restriction.right, 10);
@@ -100,5 +100,5 @@ TEST_F(DataTypeGrammar_test, object_identifier)
   string input {"OBJECT IDENTIFIER"};
   auto [status, result] = parse(input);
   EXPECT_EQ(status, true);
-  EXPECT_EQ(result.name, "OBJECT IDENTIFIER"s);
+  EXPECT_EQ(result.name.name, "OBJECT IDENTIFIER"s);
 }

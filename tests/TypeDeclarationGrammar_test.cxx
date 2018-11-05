@@ -41,7 +41,7 @@ TEST_F(TypeDeclarationGrammar_test, basic)
   EXPECT_EQ(status, true);
   EXPECT_EQ(result.name, "Xyz"s);
   EXPECT_EQ(result.baseType, "OBJECT-TYPE"s);
-  EXPECT_EQ(result.syntax.name, "INTEGER"s);
+  EXPECT_EQ(result.syntax.name.name, "INTEGER"s);
   EXPECT_EQ(result.access, "not-accessible"s);
   EXPECT_EQ(result.status, "mandatory"s);
   EXPECT_EQ(result.description, "Lorem ipsum\n        dolor sit amet."s);
@@ -67,7 +67,7 @@ TEST_F(TypeDeclarationGrammar_test, reversed_order)
   EXPECT_EQ(status, true);
   EXPECT_EQ(result.name, "a"s);
   EXPECT_EQ(result.baseType, "OBJECT-TYPE"s);
-  EXPECT_EQ(result.syntax.name, "f"s);
+  EXPECT_EQ(result.syntax.name.name, "f"s);
   EXPECT_EQ(result.access, "e"s);
   EXPECT_EQ(result.status, "d"s);
   EXPECT_EQ(result.description, "c"s);
@@ -88,7 +88,7 @@ TEST_F(TypeDeclarationGrammar_test, object_identifier)
   EXPECT_EQ(status, true);
   EXPECT_EQ(result.name, "Xyz"s);
   EXPECT_EQ(result.baseType, "OBJECT IDENTIFIER"s);
-  EXPECT_EQ(result.syntax.name, ""s);
+  EXPECT_EQ(result.syntax.name.name, ""s);
   EXPECT_EQ(result.access, ""s);
   EXPECT_EQ(result.status, ""s);
   EXPECT_EQ(result.description, ""s);

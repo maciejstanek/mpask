@@ -40,9 +40,9 @@ TEST_F(SequenceDeclarationGrammar_test, basic)
   EXPECT_EQ(result.name, "Abc"s);
   EXPECT_EQ(result.sequence.size(), 2);
   EXPECT_NE(result.sequence.find("Def"), result.sequence.end());
-  EXPECT_EQ(result.sequence["Def"], "Defdef"s);
+  EXPECT_EQ(result.sequence["Def"].name, "Defdef"s);
   EXPECT_NE(result.sequence.find("Ghi"), result.sequence.end());
-  EXPECT_EQ(result.sequence["Ghi"], "Ghighi"s);
+  EXPECT_EQ(result.sequence["Ghi"].name, "Ghighi"s);
 }
 
 TEST_F(SequenceDeclarationGrammar_test, object_identifier)
@@ -60,5 +60,5 @@ TEST_F(SequenceDeclarationGrammar_test, object_identifier)
   EXPECT_EQ(status, true);
   EXPECT_EQ(result.sequence.size(), 2);
   EXPECT_NE(result.sequence.find("Def"), result.sequence.end());
-  EXPECT_EQ(result.sequence["Def"], "OBJECT IDENTIFIER"s);
+  EXPECT_EQ(result.sequence["Def"].name, "OBJECT IDENTIFIER"s);
 }
