@@ -66,8 +66,10 @@ TEST_F(MIBFileGrammar_test, minimal)
       IMPORTS abc, def FROM ghi;
       qwe OBJECT IDENTIFIER ::= { rty 123 }
       ccc ::= SEQUENCE { ddd eee, fff ggg }
+      vvv ::= INTEGER
       aaa OBJECT-TYPE ::= { bbb 333 }
       uio ::= SEQUENCE { asd fgh, zxc vbn }
+      yyy ::= [PRIVATE 123] IMPLICIT INTEGER (0..22)
     END
   )"};
   auto [status, result] = parse(input);
@@ -84,4 +86,12 @@ TEST_F(MIBFileGrammar_test, minimal)
   EXPECT_EQ(result.sequences.at(1).sequence.size(), 2);
   EXPECT_NE(result.sequences.at(1).sequence.find("zxc"), result.sequences.at(1).sequence.end());
   EXPECT_EQ(result.sequences.at(1).sequence["zxc"].name, "vbn"s);
+  EXPECT_EQ(result.aliases.size(), 2);
+  EXPECT_EQ(result.aliases.at(1).name, "yyy"s);
+  EXPECT_EQ(result.aliases.at(1).isExplicit, false);
+  EXPECT_EQ(result.aliases.at(1).isImplicit, true);
+  EXPECT_EQ(result.aliases.at(1).visibility, "PRIVATE"s);
+  EXPECT_EQ(result.aliases.at(1).typeIdentifier, 123);
+  EXPECT_EQ(result.aliases.at(1).dataType.name.isInteger, true);
+  EXPECT_EQ(result.aliases.at(1).dataType.restriction.range, true);
 }

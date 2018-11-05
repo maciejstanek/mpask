@@ -1,13 +1,15 @@
 #pragma once
 
-#include <sstream>
+#include "mpask/MIBFile.hxx"
+
+#include <istream>
 
 namespace mpask {
 
 class Parser
 {
 public:
-  void parse(std::istream&) const;
+  MIBFile operator()(std::istream&) const;
 };
 
 }

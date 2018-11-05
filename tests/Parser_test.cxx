@@ -15,114 +15,119 @@ class Parser_test : public ::testing::Test
 
 TEST_F(Parser_test, multiple_statements)
 {
-  Parser p;
   stringstream s {R"(
-    system     OBJECT IDENTIFIER ::= { mib-2 1 }
-    interfaces OBJECT IDENTIFIER ::= { mib-2 2 }
-    at         OBJECT IDENTIFIER ::= { mib-2 3 }
+    x DEFINITIONS ::= BEGIN
+      system     OBJECT IDENTIFIER ::= { mib-2 1 }
+      interfaces OBJECT IDENTIFIER ::= { mib-2 2 }
+      at         OBJECT IDENTIFIER ::= { mib-2 3 }
+    END
   )"};
-  EXPECT_NO_THROW(p.parse(s));
+  EXPECT_NO_THROW(Parser{}(s));
 }
 
 TEST_F(Parser_test, simple_object_identifier)
 {
-  Parser p;
   stringstream s {R"(
-    system OBJECT IDENTIFIER ::= { mib-2 1 }
+    x DEFINITIONS ::= BEGIN
+      system OBJECT IDENTIFIER ::= { mib-2 1 }
+    END
   )"};
-  EXPECT_NO_THROW(p.parse(s));
+  EXPECT_NO_THROW(Parser{}(s));
 }
 
 TEST_F(Parser_test, long_object_identifier)
 {
-  Parser p;
   stringstream s {R"(
-    internet OBJECT IDENTIFIER ::= { iso org(3) dod(6) 1 }
+    x DEFINITIONS ::= BEGIN
+      internet OBJECT IDENTIFIER ::= { iso org(3) dod(6) 1 }
+    END
   )"};
-  // TODO: The parser should not allow for spaces before and inside the parenthesis.
-  EXPECT_NO_THROW(p.parse(s));
+  EXPECT_NO_THROW(Parser{}(s));
 }
 
 TEST_F(Parser_test, simple_object_type)
 {
-  Parser p;
   stringstream s {R"(
-    sysUpTime OBJECT-TYPE
-      ::= { system 3 }
+    x DEFINITIONS ::= BEGIN
+      sysUpTime OBJECT-TYPE
+        ::= { system 3 }
+    END
   )"};
-  EXPECT_NO_THROW(p.parse(s));
+  EXPECT_NO_THROW(Parser{}(s));
 }
 
 TEST_F(Parser_test, long_object_type)
 {
-  Parser p;
   stringstream s {R"(
-    sysUpTime OBJECT-TYPE
-      SYNTAX TimeTicks
-      ACCESS read-only
-      STATUS mandatory
-      DESCRIPTION
-        "The time (in hundredths of a second) since the
-        network management portion of the system was last
-        re-initialized."
-      ::= { system 3 }
+    x DEFINITIONS ::= BEGIN
+      sysUpTime OBJECT-TYPE
+        SYNTAX TimeTicks
+        ACCESS read-only
+        STATUS mandatory
+        DESCRIPTION
+          "The time (in hundredths of a second) since the
+          network management portion of the system was last
+          re-initialized."
+        ::= { system 3 }
+    END
   )"};
-  EXPECT_NO_THROW(p.parse(s));
+  EXPECT_NO_THROW(Parser{}(s));
 }
 
 TEST_F(Parser_test, simple_data_type)
 {
-  Parser p;
   stringstream s {R"(
-    DisplayString ::=
-      OCTET STRING
+    x DEFINITIONS ::= BEGIN
+      DisplayString ::=
+        OCTET STRING
+    END
   )"};
-  EXPECT_NO_THROW(p.parse(s));
+  EXPECT_NO_THROW(Parser{}(s));
 }
 
 TEST_F(Parser_test, long_data_type_no_range)
 {
-  Parser p;
   stringstream s {R"(
-    TimeTicks ::=
-      [APPLICATION 3]
-        IMPLICIT INTEGER
+    x DEFINITIONS ::= BEGIN
+      TimeTicks ::=
+        [APPLICATION 3]
+          IMPLICIT INTEGER
+    END
   )"};
-  EXPECT_NO_THROW(p.parse(s));
+  EXPECT_NO_THROW(Parser{}(s));
 }
 
 TEST_F(Parser_test, long_data_type)
 {
-  Parser p;
   stringstream s {R"(
-    IpAddress ::=
-      [APPLICATION 0]
-        IMPLICIT OCTET STRING (SIZE (4))
+    x DEFINITIONS ::= BEGIN
+      IpAddress ::=
+        [APPLICATION 0]
+          IMPLICIT OCTET STRING (SIZE (4))
+    END
   )"};
-  EXPECT_NO_THROW(p.parse(s));
+  EXPECT_NO_THROW(Parser{}(s));
 }
 
 TEST_F(Parser_test, negative)
 {
-  Parser p;
   stringstream s {R"(tf sdohf kjdsf)"};
-  EXPECT_THROW(p.parse(s), Exception);
+  EXPECT_THROW(Parser{}(s), Exception);
 }
 
 TEST_F(Parser_test, skipping_comments)
 {
-  Parser p;
   stringstream s {R"(
-    DisplayString ::= -- RANDOM COMMENT
-      OCTET STRING
+    x DEFINITIONS ::= BEGIN
+      DisplayString ::= -- RANDOM COMMENT
+        OCTET STRING
+    END
   )"};
-  EXPECT_NO_THROW(p.parse(s));
+  EXPECT_NO_THROW(Parser{}(s));
 }
 
 TEST_F(Parser_test, rfc1213_mib_txt)
 {
-  Parser p;
   ifstream s {"resources/RFC1213-MIB.txt"};
-  // EXPECT_NO_THROW(p.parse(s));
-  p.parse(s);
+  EXPECT_NO_THROW(Parser{}(s));
 }
