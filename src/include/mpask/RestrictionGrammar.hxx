@@ -24,7 +24,7 @@ namespace mpask
       using boost::spirit::qi::lit;
       using boost::spirit::ascii::space_type;
       using boost::spirit::qi::_1;
-      //using boost::spirit::qi::eps;
+      using boost::spirit::qi::lexeme;
       using boost::spirit::qi::_val;
       using boost::phoenix::ref;
 
