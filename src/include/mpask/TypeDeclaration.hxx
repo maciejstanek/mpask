@@ -16,6 +16,7 @@ typedef std::vector<std::string> vector_string;
 struct TypeDeclaration
 {
   std::string name;
+  std::string baseType;
   DataType syntax;
   std::string access;
   std::string status;
@@ -30,6 +31,7 @@ struct TypeDeclaration
 BOOST_FUSION_ADAPT_STRUCT(
   mpask::TypeDeclaration,
   (std::string, name)
+  (std::string, baseType)
   (mpask::DataType, syntax)
   (std::string, access)
   (std::string, status)

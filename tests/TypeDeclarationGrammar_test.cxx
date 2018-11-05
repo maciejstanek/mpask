@@ -40,6 +40,7 @@ TEST_F(TypeDeclarationGrammar_test, basic)
   auto [status, result] = parse(input);
   EXPECT_EQ(status, true);
   EXPECT_EQ(result.name, "Xyz"s);
+  EXPECT_EQ(result.baseType, "OBJECT-TYPE"s);
   EXPECT_EQ(result.syntax.name, "INTEGER"s);
   EXPECT_EQ(result.access, "not-accessible"s);
   EXPECT_EQ(result.status, "mandatory"s);
@@ -65,6 +66,7 @@ TEST_F(TypeDeclarationGrammar_test, reversed_order)
   auto [status, result] = parse(input);
   EXPECT_EQ(status, true);
   EXPECT_EQ(result.name, "a"s);
+  EXPECT_EQ(result.baseType, "OBJECT-TYPE"s);
   EXPECT_EQ(result.syntax.name, "f"s);
   EXPECT_EQ(result.access, "e"s);
   EXPECT_EQ(result.status, "d"s);
@@ -76,22 +78,24 @@ TEST_F(TypeDeclarationGrammar_test, reversed_order)
   EXPECT_EQ(result.address.value, 1);
 }
 
-TEST_F(TypeDeclarationGrammar_test, minimal)
+TEST_F(TypeDeclarationGrammar_test, object_identifier)
 {
-  // TODO: Merge TypeDeclaration with ObjectIdentifier!
   string input {R"(
-    Xyz OBJECT-TYPE
-      ::= { Abc 123 }
+    Xyz OBJECT IDENTIFIER
+      ::= { Abc Def(123) 456 }
   )"};
   auto [status, result] = parse(input);
   EXPECT_EQ(status, true);
   EXPECT_EQ(result.name, "Xyz"s);
+  EXPECT_EQ(result.baseType, "OBJECT IDENTIFIER"s);
   EXPECT_EQ(result.syntax.name, ""s);
   EXPECT_EQ(result.access, ""s);
   EXPECT_EQ(result.status, ""s);
   EXPECT_EQ(result.description, ""s);
   EXPECT_EQ(result.indices.size(), 0);
   EXPECT_EQ(result.address.label, "Abc"s);
-  EXPECT_EQ(result.address.intermediateNodes.size(), 0);
-  EXPECT_EQ(result.address.value, 123);
+  EXPECT_EQ(result.address.intermediateNodes.size(), 1);
+  EXPECT_EQ(result.address.intermediateNodes.at(0).first, "Def"s);
+  EXPECT_EQ(result.address.intermediateNodes.at(0).second, 123);
+  EXPECT_EQ(result.address.value, 456);
 }

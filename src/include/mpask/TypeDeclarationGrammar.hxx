@@ -38,12 +38,17 @@ namespace mpask
 
       typeDeclaration =
         name [boost::phoenix::ref(typeDeclarationInst.name) = _1]
-        >> lit("OBJECT-TYPE")
+        >> baseType [boost::phoenix::ref(typeDeclarationInst.baseType) = _1]
         >> *property
         >> lit("::=")
         >> addressGrammar [
           boost::phoenix::ref(typeDeclarationInst.address) = _1,
           _val = boost::phoenix::ref(typeDeclarationInst)]
+        ;
+
+      baseType =
+        (lit("OBJECT IDENTIFIER")) [_val = std::string("OBJECT IDENTIFIER")] // FIXME: Only one space allowed.
+        | name [_val = _1]
         ;
       
       property =
@@ -97,8 +102,7 @@ namespace mpask
     DataTypeGrammar<Iterator> dataTypeGrammar;
     AddressGrammar<Iterator> addressGrammar;
     boost::spirit::qi::rule<Iterator, TypeDeclaration(), boost::spirit::ascii::space_type> typeDeclaration;
-    boost::spirit::qi::rule<Iterator, std::string()> name;
-    boost::spirit::qi::rule<Iterator, std::string()> quotedText;
+    boost::spirit::qi::rule<Iterator, std::string()> name, baseType, quotedText;
     boost::spirit::qi::rule<Iterator, boost::spirit::ascii::space_type> property, syntax, access, status, description, index;
   };
 }
