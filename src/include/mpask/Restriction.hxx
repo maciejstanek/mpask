@@ -13,6 +13,14 @@ struct Restriction
   int right {};
 };
 
+/* bool operator==(const Restriction& l, const Restriction& r) */
+/* { */
+/*   return l.size == r.size */
+/*     && l.range == r.range */
+/*     && l.left == r.left */
+/*     && l.right == r.right; */
+/* } */
+
 }
 
 // TODO: Is it needed?
