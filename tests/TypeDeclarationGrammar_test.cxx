@@ -51,6 +51,31 @@ TEST_F(TypeDeclarationGrammar_test, basic)
   EXPECT_EQ(result.address.value, 456);
 }
 
+TEST_F(TypeDeclarationGrammar_test, reversed_order)
+{
+  string input {R"(
+    a OBJECT-TYPE
+      INDEX { b }
+      DESCRIPTION "c"
+      STATUS d
+      ACCESS e
+      SYNTAX f
+      ::= { g 1 }
+  )"};
+  auto [status, result] = parse(input);
+  EXPECT_EQ(status, true);
+  EXPECT_EQ(result.name, "a"s);
+  EXPECT_EQ(result.syntax.name, "f"s);
+  EXPECT_EQ(result.access, "e"s);
+  EXPECT_EQ(result.status, "d"s);
+  EXPECT_EQ(result.description, "c"s);
+  EXPECT_EQ(result.indices.size(), 1);
+  EXPECT_EQ(result.indices.at(0), "b"s);
+  EXPECT_EQ(result.address.label, "g"s);
+  EXPECT_EQ(result.address.intermediateNodes.size(), 0);
+  EXPECT_EQ(result.address.value, 1);
+}
+
 TEST_F(TypeDeclarationGrammar_test, minimal)
 {
   // TODO: Merge TypeDeclaration with ObjectIdentifier!
