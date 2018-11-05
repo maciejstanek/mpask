@@ -44,7 +44,7 @@ namespace mpask
         >> lit("::=")
         >> lit("BEGIN")
         >> -(
-          importGrammar [boost::phoenix::ref(mibFileInst.imports) = _1]
+          importGrammar [boost::phoenix::ref(mibFileInst.imports) = _1] // FIXME: Only one import allowed now (and only at the top).
           )
         >> *(
           typeDeclarationGrammar [boost::phoenix::push_back(boost::phoenix::ref(mibFileInst.types), _1)]
