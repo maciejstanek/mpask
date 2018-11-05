@@ -2,6 +2,8 @@
 
 #include "mpask/Restriction.hxx"
 #include "mpask/DataTypeName.hxx"
+#include "mpask/DataType.hxx"
+#include "mpask/Address.hxx"
 
 #include <boost/fusion/adapted/struct.hpp>
 #include <boost/fusion/adapted/struct/adapt_struct.hpp>

@@ -15,7 +15,7 @@ namespace mpask
   struct ImportGrammar : boost::spirit::qi::grammar
   <
     Iterator,
-    std::vector<std::pair<std::vector<std::string>, std::string>>(),
+    std::vector<std::pair<std::vector<std::string>, std::string>>(), // TODO: better create a wrappper struct
     boost::spirit::ascii::space_type
   >
   {
