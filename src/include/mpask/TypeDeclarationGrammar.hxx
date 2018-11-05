@@ -3,6 +3,7 @@
 #include "mpask/DataTypeGrammar.hxx"
 #include "mpask/AddressGrammar.hxx"
 #include "mpask/TypeDeclaration.hxx"
+#include "mpask/DataTypeNameGrammar.hxx"
 
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/qi_lexeme.hpp>
@@ -38,7 +39,7 @@ namespace mpask
 
       typeDeclaration =
         name [boost::phoenix::ref(typeDeclarationInst.name) = _1]
-        >> baseType [boost::phoenix::ref(typeDeclarationInst.baseType) = _1]
+        >> dataTypeNameGrammar [boost::phoenix::ref(typeDeclarationInst.baseType) = _1]
         >> *property
         >> lit("::=")
         >> addressGrammar [
@@ -46,11 +47,6 @@ namespace mpask
           _val = boost::phoenix::ref(typeDeclarationInst)]
         ;
 
-      baseType =
-        (lit("OBJECT IDENTIFIER")) [_val = std::string("OBJECT IDENTIFIER")] // FIXME: Only one space allowed.
-        | name [_val = _1]
-        ;
-      
       property =
         syntax
         | access
@@ -101,8 +97,9 @@ namespace mpask
     TypeDeclaration typeDeclarationInst;
     DataTypeGrammar<Iterator> dataTypeGrammar;
     AddressGrammar<Iterator> addressGrammar;
+    DataTypeNameGrammar<Iterator> dataTypeNameGrammar;
     boost::spirit::qi::rule<Iterator, TypeDeclaration(), boost::spirit::ascii::space_type> typeDeclaration;
-    boost::spirit::qi::rule<Iterator, std::string()> name, baseType, quotedText;
+    boost::spirit::qi::rule<Iterator, std::string()> name, quotedText;
     boost::spirit::qi::rule<Iterator, boost::spirit::ascii::space_type> property, syntax, access, status, description, index;
   };
 }

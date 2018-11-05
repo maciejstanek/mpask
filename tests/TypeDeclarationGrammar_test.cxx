@@ -40,7 +40,7 @@ TEST_F(TypeDeclarationGrammar_test, basic)
   auto [status, result] = parse(input);
   EXPECT_EQ(status, true);
   EXPECT_EQ(result.name, "Xyz"s);
-  EXPECT_EQ(result.baseType, "OBJECT-TYPE"s);
+  EXPECT_EQ(result.baseType.name, "OBJECT-TYPE"s);
   EXPECT_EQ(result.syntax.name.name, "INTEGER"s);
   EXPECT_EQ(result.access, "not-accessible"s);
   EXPECT_EQ(result.status, "mandatory"s);
@@ -66,7 +66,7 @@ TEST_F(TypeDeclarationGrammar_test, reversed_order)
   auto [status, result] = parse(input);
   EXPECT_EQ(status, true);
   EXPECT_EQ(result.name, "a"s);
-  EXPECT_EQ(result.baseType, "OBJECT-TYPE"s);
+  EXPECT_EQ(result.baseType.name, "OBJECT-TYPE"s);
   EXPECT_EQ(result.syntax.name.name, "f"s);
   EXPECT_EQ(result.access, "e"s);
   EXPECT_EQ(result.status, "d"s);
@@ -87,7 +87,7 @@ TEST_F(TypeDeclarationGrammar_test, object_identifier)
   auto [status, result] = parse(input);
   EXPECT_EQ(status, true);
   EXPECT_EQ(result.name, "Xyz"s);
-  EXPECT_EQ(result.baseType, "OBJECT IDENTIFIER"s);
+  EXPECT_EQ(result.baseType.name, "OBJECT IDENTIFIER"s);
   EXPECT_EQ(result.syntax.name.name, ""s);
   EXPECT_EQ(result.access, ""s);
   EXPECT_EQ(result.status, ""s);

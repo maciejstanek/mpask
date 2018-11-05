@@ -1,6 +1,7 @@
 #pragma once
 
 #include "mpask/Restriction.hxx"
+#include "mpask/DataTypeName.hxx"
 
 #include <boost/fusion/adapted/struct.hpp>
 #include <boost/fusion/adapted/struct/adapt_struct.hpp>
@@ -16,7 +17,7 @@ typedef std::vector<std::string> vector_string;
 struct TypeDeclaration
 {
   std::string name;
-  std::string baseType;
+  DataTypeName baseType;
   DataType syntax;
   std::string access;
   std::string status;
@@ -31,7 +32,7 @@ struct TypeDeclaration
 BOOST_FUSION_ADAPT_STRUCT(
   mpask::TypeDeclaration,
   (std::string, name)
-  (std::string, baseType)
+  (mpask::DataTypeName, baseType)
   (mpask::DataType, syntax)
   (std::string, access)
   (std::string, status)
