@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 #include <tuple>
+#include <map>
 
 namespace mpask {
 

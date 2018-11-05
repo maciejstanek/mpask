@@ -85,7 +85,7 @@ TEST_F(MIBFileGrammar_test, minimal)
   EXPECT_EQ(result.sequences.at(1).name, "uio"s);
   EXPECT_EQ(result.sequences.at(1).sequence.size(), 2);
   EXPECT_NE(result.sequences.at(1).sequence.find("zxc"), result.sequences.at(1).sequence.end());
-  EXPECT_EQ(result.sequences.at(1).sequence["zxc"].name, "vbn"s);
+  EXPECT_EQ(result.sequences.at(1).sequence["zxc"].name.name, "vbn"s);
   EXPECT_EQ(result.aliases.size(), 2);
   EXPECT_EQ(result.aliases.at(1).name, "yyy"s);
   EXPECT_EQ(result.aliases.at(1).isExplicit, false);

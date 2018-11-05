@@ -34,19 +34,20 @@ TEST_F(TypeDeclarationGrammar_test, basic)
       DESCRIPTION
         "Lorem ipsum
         dolor sit amet."
-      INDEX { Qwerty }
+      INDEX { Qwerty, Uiop }
       ::= { Abc Def(123) 456 }
   )"};
   auto [status, result] = parse(input);
-  EXPECT_EQ(status, true);
+  ASSERT_EQ(status, true);
   EXPECT_EQ(result.name, "Xyz"s);
   EXPECT_EQ(result.baseType.name, "OBJECT-TYPE"s);
   EXPECT_EQ(result.syntax.name.name, "INTEGER"s);
   EXPECT_EQ(result.access, "not-accessible"s);
   EXPECT_EQ(result.status, "mandatory"s);
   EXPECT_EQ(result.description, "Lorem ipsum\n        dolor sit amet."s);
-  EXPECT_EQ(result.indices.size(), 1);
+  EXPECT_EQ(result.indices.size(), 2);
   EXPECT_EQ(result.indices.at(0), "Qwerty"s);
+  EXPECT_EQ(result.indices.at(1), "Uiop"s);
   EXPECT_EQ(result.address.label, "Abc"s);
   EXPECT_EQ(result.address.intermediateNodes.size(), 1);
   EXPECT_EQ(result.address.value, 456);
@@ -64,7 +65,7 @@ TEST_F(TypeDeclarationGrammar_test, reversed_order)
       ::= { g 1 }
   )"};
   auto [status, result] = parse(input);
-  EXPECT_EQ(status, true);
+  ASSERT_EQ(status, true);
   EXPECT_EQ(result.name, "a"s);
   EXPECT_EQ(result.baseType.name, "OBJECT-TYPE"s);
   EXPECT_EQ(result.syntax.name.name, "f"s);
@@ -85,7 +86,7 @@ TEST_F(TypeDeclarationGrammar_test, object_identifier)
       ::= { Abc Def(123) 456 }
   )"};
   auto [status, result] = parse(input);
-  EXPECT_EQ(status, true);
+  ASSERT_EQ(status, true);
   EXPECT_EQ(result.name, "Xyz"s);
   EXPECT_EQ(result.baseType.name, "OBJECT IDENTIFIER"s);
   EXPECT_EQ(result.syntax.name.name, ""s);

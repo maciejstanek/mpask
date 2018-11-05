@@ -78,7 +78,7 @@ namespace mpask
       index =
         lit("INDEX")
         >> lit("{")
-        >> (+name) [boost::phoenix::ref(typeDeclarationInst.indices) = _1]
+        >> (name % lit(',')) [boost::phoenix::ref(typeDeclarationInst.indices) = _1]
         >> lit("}")
         ;
 

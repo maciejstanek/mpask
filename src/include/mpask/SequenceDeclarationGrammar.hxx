@@ -1,7 +1,7 @@
 #pragma once
 
 #include "mpask/SequenceDeclaration.hxx"
-#include "mpask/DataTypeNameGrammar.hxx"
+#include "mpask/DataTypeGrammar.hxx"
 
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/qi_lexeme.hpp>
@@ -46,7 +46,7 @@ namespace mpask
 
       sequenceElement =
         name
-        >> dataTypeNameGrammar
+        >> dataTypeGrammar
         ;
 
       name =
@@ -54,11 +54,11 @@ namespace mpask
         ;
     }
 
-    DataTypeNameGrammar<Iterator> dataTypeNameGrammar;
+    DataTypeGrammar<Iterator> dataTypeGrammar;
     SequenceDeclaration sequenceDeclarationInst;
     boost::spirit::qi::rule<Iterator, SequenceDeclaration(), boost::spirit::ascii::space_type> sequenceDeclaration;
-    boost::spirit::qi::rule<Iterator, std::pair<std::string, DataTypeName>(), boost::spirit::ascii::space_type> sequenceElement;
-    boost::spirit::qi::rule<Iterator, std::map<std::string, DataTypeName>(), boost::spirit::ascii::space_type> sequenceElements;
+    boost::spirit::qi::rule<Iterator, std::pair<std::string, DataType>(), boost::spirit::ascii::space_type> sequenceElement;
+    boost::spirit::qi::rule<Iterator, std::map<std::string, DataType>(), boost::spirit::ascii::space_type> sequenceElements;
     boost::spirit::qi::rule<Iterator, std::string()> name;
   };
 }
