@@ -16,9 +16,9 @@ struct Restriction
 }
 
 // TODO: Is it needed?
-BOOST_FUSION_ADAPT_STRUCT(
-  mpask::Restriction,
-  (std::string, type)
-  (int, left)
-  (int, right)
-)
+// BOOST_FUSION_ADAPT_STRUCT(
+//   mpask::Restriction,
+//   (std::string, type)
+//   (int, left)
+//   (int, right)
+// )
