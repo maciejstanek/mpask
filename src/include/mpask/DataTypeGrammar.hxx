@@ -37,7 +37,7 @@ namespace mpask
 
       dataType =
         -sequenceOf
-        >> name [boost::phoenix::ref(dataTypeInst.name) = _1]
+        >> dataTypeTag [boost::phoenix::ref(dataTypeInst.name) = _1]
         >> -restrictionGrammar [boost::phoenix::ref(dataTypeInst.restriction) = _1]
         >> -integerValuesMapGrammar [boost::phoenix::ref(dataTypeInst.integerValues) = _1]
         >> eps [_val = boost::phoenix::ref(dataTypeInst)]
@@ -46,6 +46,11 @@ namespace mpask
       sequenceOf =
         lit("SEQUENCE")
         >> lit("OF") [boost::phoenix::ref(dataTypeInst.isSequence) = true]
+        ;
+
+      dataTypeTag =
+        (lit("OBJECT IDENTIFIER")) [_val = std::string("OBJECT IDENTIFIER")] // FIXME: Only one space allowed.
+        | name [_val = _1]
         ;
 
       name =
@@ -57,7 +62,7 @@ namespace mpask
     RestrictionGrammar<Iterator> restrictionGrammar;
     IntegerValuesMapGrammar<Iterator> integerValuesMapGrammar;
     boost::spirit::qi::rule<Iterator, DataType(), boost::spirit::ascii::space_type> dataType;
-    boost::spirit::qi::rule<Iterator, std::string()> name;
+    boost::spirit::qi::rule<Iterator, std::string()> name, dataTypeTag;
     boost::spirit::qi::rule<Iterator, boost::spirit::ascii::space_type> sequenceOf;
   };
 }

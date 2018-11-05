@@ -94,3 +94,11 @@ TEST_F(DataTypeGrammar_test, string)
   EXPECT_EQ(result.restriction.range, true);
   EXPECT_EQ(result.integerValues.size(), 0);
 }
+
+TEST_F(DataTypeGrammar_test, object_identifier)
+{
+  string input {"OBJECT IDENTIFIER"};
+  auto [status, result] = parse(input);
+  EXPECT_EQ(status, true);
+  EXPECT_EQ(result.name, "OBJECT IDENTIFIER"s);
+}
