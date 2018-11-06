@@ -67,4 +67,13 @@ namespace mpask
   {
     return static_cast<int>(children.size());
   }
+
+  void Node::printHierarchy(int depth, ostream& output) const
+  {
+    auto padding = string(depth * 2, ' ');
+    output << padding << getName() << "("  << getIdentifier() << ")" << endl;
+    for (const auto& child : children) {
+      child.second->printHierarchy(depth + 1, output);
+    }
+  }
 }

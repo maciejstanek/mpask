@@ -18,6 +18,7 @@ TEST_F(TreeBuilder_test, example_1)
 {
   stringstream input {R"(
     x DEFINITIONS ::= BEGIN
+      mib-2 OBJECT IDENTIFIER ::= { mgmt 1 }
       aaa OBJECT IDENTIFIER ::= { mib-2 1 }
       bbb OBJECT IDENTIFIER ::= { mib-2 2 }
       ccc OBJECT IDENTIFIER ::= { mib-2 3 }
@@ -86,4 +87,14 @@ TEST_F(TreeBuilder_test, example_1)
     }
   }
   EXPECT_EQ(subnodeIter, 3);
+}
+
+TEST_F(TreeBuilder_test, mib)
+{
+  ifstream input {"resources/RFC1213-MIB.txt"};
+  auto object = Parser{}(input);
+  auto root = TreeBuilder{}(object);
+  stringstream output;
+  root->printHierarchy(0, output);
+  cerr << output.str();
 }

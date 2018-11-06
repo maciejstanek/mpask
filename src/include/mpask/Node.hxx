@@ -6,6 +6,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <ostream>
 // #include <variant>
 
 namespace mpask {
@@ -24,6 +25,7 @@ public:
   int size() const;
   void setSource(const TypeDeclaration&);
   const TypeDeclaration& getSource() const; // FIXME: Make a pointer or reference.
+  void printHierarchy(int depth, std::ostream&) const;
 private:
   TypeDeclaration source;
   std::string name;
