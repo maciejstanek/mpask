@@ -53,12 +53,12 @@ namespace mpask
     return children.end();
   }
 
-  void Node::setSource(const shared_ptr<TypeDeclaration>& newSource)
+  void Node::setSource(const TypeDeclaration& newSource)
   {
     source = newSource;
   }
 
-  const shared_ptr<TypeDeclaration>& Node::getSource() const
+  const TypeDeclaration& Node::getSource() const
   {
     return source;
   }

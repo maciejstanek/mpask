@@ -21,10 +21,10 @@ public:
   Iterator begin();
   Iterator end();
   int size() const;
-  void setSource(const std::shared_ptr<TypeDeclaration>&);
-  const std::shared_ptr<TypeDeclaration>& getSource() const;
+  void setSource(const TypeDeclaration&);
+  const TypeDeclaration& getSource() const; // FIXME: Make a pointer or reference.
 private:
-  std::shared_ptr<TypeDeclaration> source;
+  TypeDeclaration source;
   std::string name;
   int identifier;
   std::vector<std::shared_ptr<Node>> children;
