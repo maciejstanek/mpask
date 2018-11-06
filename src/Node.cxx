@@ -3,6 +3,7 @@
 #include "mpask/Exception.hxx"
 
 #include <iostream>
+#include <sstream>
 
 using namespace std;
 
@@ -68,12 +69,30 @@ namespace mpask
     return static_cast<int>(children.size());
   }
 
-  void Node::printHierarchy(int depth, ostream& output) const
+  void Node::printHierarchy(ostream& output) const
   {
-    auto padding = string(depth * 2, ' ');
-    output << padding << getName() << "("  << getIdentifier() << ")" << endl;
+    vector<int> identifiers {getIdentifier()};
+    printHierarchy(identifiers, output); 
+  }
+
+  void Node::printHierarchy(vector<int> identifiers, ostream& output) const
+  {
+    int tab = (static_cast<int>(identifiers.size()) - 1 >= 0) ? 2 * (static_cast<int>(identifiers.size()) - 1) : 0;
+    auto padding = string(tab, ' ');
+    stringstream longIdentifier;
+    bool firstIdentifier {true};
+    for (auto singleIdentifier : identifiers) {
+      if (!firstIdentifier) {
+        longIdentifier << ".";
+      }
+      firstIdentifier = false;
+      longIdentifier << singleIdentifier;
+    }
+    output << padding << getName() << "("  << longIdentifier.str() << ")" << endl;
     for (const auto& child : children) {
-      child.second->printHierarchy(depth + 1, output);
+      auto newIdentifiers = identifiers;
+      newIdentifiers.push_back(child.second->getIdentifier());
+      child.second->printHierarchy(newIdentifiers, output);
     }
   }
 }

@@ -25,7 +25,8 @@ public:
   int size() const;
   void setSource(const TypeDeclaration&);
   const TypeDeclaration& getSource() const; // FIXME: Make a pointer or reference.
-  void printHierarchy(int depth, std::ostream&) const;
+  void printHierarchy(std::vector<int> identifiers, std::ostream&) const;
+  void printHierarchy(std::ostream&) const;
 private:
   TypeDeclaration source;
   std::string name;

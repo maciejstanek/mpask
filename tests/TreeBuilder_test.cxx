@@ -95,6 +95,6 @@ TEST_F(TreeBuilder_test, mib)
   auto object = Parser{}(input);
   auto root = TreeBuilder{}(object);
   stringstream output;
-  root->printHierarchy(0, output);
+  root->printHierarchy(output);
   cerr << output.str();
 }
