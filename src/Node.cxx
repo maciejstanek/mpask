@@ -69,6 +69,64 @@ namespace mpask
     return static_cast<int>(children.size());
   }
 
+  void Node::printDotFile(ostream& output) const
+  {
+    vector<int> identifiers {getIdentifier()};
+    output << "digraph mib {" << endl;
+    printDotFileNodes(identifiers, output); 
+    output << endl;
+    printDotFileConnections(identifiers, output); 
+    output << "}" << endl;
+  }
+
+  string Node::generateDotFileNodeName(vector<int> identifiers) const
+  {
+    stringstream nodeName;
+    nodeName << "node";
+    for (auto singleIdentifier : identifiers) {
+      nodeName << "_" << singleIdentifier;
+    }
+    return nodeName.str();
+  }
+
+  string Node::generateOID(vector<int> identifiers) const
+  {
+    stringstream longIdentifier;
+    bool firstIdentifier {true};
+    for (auto singleIdentifier : identifiers) {
+      if (!firstIdentifier) {
+        longIdentifier << ".";
+      }
+      firstIdentifier = false;
+      longIdentifier << singleIdentifier;
+    }
+    return longIdentifier.str();
+  }
+
+  void Node::printDotFileNodes(vector<int> identifiers, ostream& output) const
+  {
+    output << "  " << generateDotFileNodeName(identifiers)
+      << R"( [shape="box",label=")" << getName() << R"(\n)"
+      << generateOID(identifiers) << R"("];)" << endl;
+    for (const auto& child : children) {
+      auto newIdentifiers = identifiers;
+      newIdentifiers.push_back(child.second->getIdentifier());
+      child.second->printDotFileNodes(newIdentifiers, output);
+    }
+  }
+
+  void Node::printDotFileConnections(vector<int> identifiers, ostream& output) const
+  {
+    auto nodeName = generateDotFileNodeName(identifiers);
+    for (const auto& child : children) {
+      auto newIdentifiers = identifiers;
+      newIdentifiers.push_back(child.second->getIdentifier());
+      auto subnodeName = child.second->generateDotFileNodeName(newIdentifiers);
+      output << "  " << nodeName << " -> " << subnodeName << ";" << endl;
+      child.second->printDotFileConnections(newIdentifiers, output);
+    }
+  }
+
   void Node::printHierarchy(ostream& output) const
   {
     vector<int> identifiers {getIdentifier()};
@@ -79,16 +137,7 @@ namespace mpask
   {
     int tab = (static_cast<int>(identifiers.size()) - 1 >= 0) ? 2 * (static_cast<int>(identifiers.size()) - 1) : 0;
     auto padding = string(tab, ' ');
-    stringstream longIdentifier;
-    bool firstIdentifier {true};
-    for (auto singleIdentifier : identifiers) {
-      if (!firstIdentifier) {
-        longIdentifier << ".";
-      }
-      firstIdentifier = false;
-      longIdentifier << singleIdentifier;
-    }
-    output << padding << getName() << "("  << longIdentifier.str() << ")" << endl;
+    output << padding << getName() << "("  << generateOID(identifiers) << ")" << endl;
     for (const auto& child : children) {
       auto newIdentifiers = identifiers;
       newIdentifiers.push_back(child.second->getIdentifier());

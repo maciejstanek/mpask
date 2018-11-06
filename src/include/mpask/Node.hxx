@@ -27,6 +27,11 @@ public:
   const TypeDeclaration& getSource() const; // FIXME: Make a pointer or reference.
   void printHierarchy(std::vector<int> identifiers, std::ostream&) const;
   void printHierarchy(std::ostream&) const;
+  std::string generateOID(std::vector<int> identifiers) const;
+  void printDotFile(std::ostream& output) const;
+  void printDotFileNodes(std::vector<int> identifiers, std::ostream& output) const;
+  std::string generateDotFileNodeName(std::vector<int> identifiers) const;
+  void printDotFileConnections(std::vector<int> identifiers, std::ostream& output) const;
 private:
   TypeDeclaration source;
   std::string name;

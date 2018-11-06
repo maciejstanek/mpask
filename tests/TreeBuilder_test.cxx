@@ -97,4 +97,8 @@ TEST_F(TreeBuilder_test, mib)
   stringstream output;
   root->printHierarchy(output);
   cerr << output.str();
+  ofstream dot;
+  dot.open("mib.dot");
+  root->printDotFile(dot);
+  dot.close();
 }

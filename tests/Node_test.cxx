@@ -75,12 +75,28 @@ TEST_F(Node_test, find_by_name)
   EXPECT_EQ(n22, n->findNodeByName("mno"));
   stringstream s;   
   n->printHierarchy(s);
-  cerr << s.str();
-  //EXPECT_EQ(s.str(),
-  //  "abc(1)\n"
-  //  "  def(1.1)\n"
-  //  "  ghi(2.1)\n"
-  //  "    jkl(2.1.1)\n"
-  //  "    mno(2.1.2)\n"
-  //);
+  EXPECT_EQ(s.str(),
+    "abc(1)\n"
+    "  def(1.1)\n"
+    "  ghi(1.2)\n"
+    "    jkl(1.2.1)\n"
+    "    mno(1.2.2)\n"
+  );
+  stringstream d;   
+  n->printDotFile(d);
+  EXPECT_EQ(d.str(),
+		"digraph mib {\n"
+		"  node_1 [shape=\"box\",label=\"abc\\n1\"];\n"
+		"  node_1_1 [shape=\"box\",label=\"def\\n1.1\"];\n"
+		"  node_1_2 [shape=\"box\",label=\"ghi\\n1.2\"];\n"
+		"  node_1_2_1 [shape=\"box\",label=\"jkl\\n1.2.1\"];\n"
+		"  node_1_2_2 [shape=\"box\",label=\"mno\\n1.2.2\"];\n"
+		"\n"
+		"  node_1 -> node_1_1;\n"
+		"  node_1 -> node_1_2;\n"
+		"  node_1_2 -> node_1_2_1;\n"
+		"  node_1_2 -> node_1_2_2;\n"
+		"}\n"
+	);
+  cerr << d.str();
 }
