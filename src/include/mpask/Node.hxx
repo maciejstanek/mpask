@@ -20,6 +20,7 @@ public:
   int getIdentifier() const;
   Iterator begin();
   Iterator end();
+  int size() const;
   void setSource(const std::shared_ptr<TypeDeclaration>&);
   const std::shared_ptr<TypeDeclaration>& getSource() const;
 private:

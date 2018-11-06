@@ -38,6 +38,7 @@ TEST_F(Node_test, iterator)
   auto n2 = make_shared<Node>("ghi", 789);
   n->addChild(n1);
   n->addChild(n2);
+  EXPECT_EQ(n->size(), 2);
   int count {};
   for (const auto& child : *n) {
     switch (count++) {

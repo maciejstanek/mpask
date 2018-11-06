@@ -62,4 +62,9 @@ namespace mpask
   {
     return source;
   }
+
+  int Node::size() const
+  {
+    return static_cast<int>(children.size());
+  }
 }
