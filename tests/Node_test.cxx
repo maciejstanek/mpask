@@ -36,19 +36,21 @@ TEST_F(Node_test, iterator)
   auto n = make_shared<Node>("abc", 123);
   auto n1 = make_shared<Node>("def", 456);
   auto n2 = make_shared<Node>("ghi", 789);
-  n->addChild(n1);
-  n->addChild(n2);
+  n->addChild(456, n1);
+  n->addChild(789, n2);
   EXPECT_EQ(n->size(), 2);
   int count {};
-  for (const auto& child : *n) {
+  for (const auto& [identifier, child] : *n) {
     switch (count++) {
       case 0:
         EXPECT_EQ(child->getName(), "def"s);
         EXPECT_EQ(child->getIdentifier(), 456);
+        EXPECT_EQ(identifier, 456);
         break;
       case 1:
         EXPECT_EQ(child->getName(), "ghi"s);
         EXPECT_EQ(child->getIdentifier(), 789);
+        EXPECT_EQ(identifier, 789);
         break;
     }
   }
@@ -62,10 +64,10 @@ TEST_F(Node_test, find_by_name)
   auto n2 = make_shared<Node>("ghi", 2);
   auto n21 = make_shared<Node>("jkl", 1);
   auto n22 = make_shared<Node>("mno", 2);
-  n2->addChild(n21);
-  n2->addChild(n22);
-  n->addChild(n1);
-  n->addChild(n2);
+  n2->addChild(1, n21);
+  n2->addChild(2, n22);
+  n->addChild(1, n1);
+  n->addChild(2, n2);
   EXPECT_EQ(n1, n->findNodeByName("def"));
   EXPECT_EQ(n2, n->findNodeByName("ghi"));
   EXPECT_EQ(n21, n->findNodeByName("jkl"));

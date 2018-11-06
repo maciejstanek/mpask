@@ -32,26 +32,29 @@ TEST_F(TreeBuilder_test, example_1)
   auto object = Parser{}(input);
 
   auto root = TreeBuilder{}(object);
-  shared_ptr<Node> subroot;
-  EXPECT_EQ(root->getName(), "mib-2"s); // NOTE: Always the root.
+  ASSERT_EQ(root->getName(), "mib-2"s); // NOTE: Always the root.
   EXPECT_EQ(root->size(), 3);
   int nodeIter {};
-  for (const auto& node : *root) {
+  shared_ptr<Node> subroot;
+  for (const auto& [identifier, node] : *root) {
     switch (++nodeIter) {
       case 1:
         EXPECT_EQ(node->getName(), "aaa"s);
         EXPECT_EQ(node->getIdentifier(), 1);
+        EXPECT_EQ(identifier, 1);
         EXPECT_EQ(node->size(), 0);
         break;
       case 2:
         EXPECT_EQ(node->getName(), "bbb"s);
         EXPECT_EQ(node->getIdentifier(), 2);
+        EXPECT_EQ(identifier, 2);
         EXPECT_EQ(node->size(), 3);
         subroot = node;
         break;
       case 3:
         EXPECT_EQ(node->getName(), "ccc"s);
         EXPECT_EQ(node->getIdentifier(), 3);
+        EXPECT_EQ(identifier, 3);
         EXPECT_EQ(node->size(), 0);
         break;
     }
@@ -60,21 +63,24 @@ TEST_F(TreeBuilder_test, example_1)
   ASSERT_NE(subroot, nullptr);
 
   int subnodeIter {};
-  for (const auto& subnode : *subroot) {
+  for (const auto& [identifier, subnode] : *subroot) {
     switch (++subnodeIter) {
-      case 0:
+      case 1:
         EXPECT_EQ(subnode->getName(), "ddd"s);
         EXPECT_EQ(subnode->getIdentifier(), 1);
+        EXPECT_EQ(identifier, 1);
         EXPECT_EQ(subnode->size(), 0);
         break;
-      case 1:
+      case 2:
         EXPECT_EQ(subnode->getName(), "eee"s);
         EXPECT_EQ(subnode->getIdentifier(), 2);
+        EXPECT_EQ(identifier, 2);
         EXPECT_EQ(subnode->size(), 3);
         break;
-      case 2:
+      case 3:
         EXPECT_EQ(subnode->getName(), "fff"s);
         EXPECT_EQ(subnode->getIdentifier(), 3);
+        EXPECT_EQ(identifier, 3);
         EXPECT_EQ(subnode->size(), 0);
         break;
     }

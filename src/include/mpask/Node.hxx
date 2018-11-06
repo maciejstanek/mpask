@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <vector>
+#include <map>
 #include <string>
 // #include <variant>
 
@@ -12,9 +13,9 @@ namespace mpask {
 class Node
 {
 public:
-  using Iterator = std::vector<std::shared_ptr<Node>>::iterator;
+  using Iterator = std::map<int, std::shared_ptr<Node>>::iterator;
   Node(const std::string& newName, int newIdentifier);
-  void addChild(const std::shared_ptr<Node>&);
+  void addChild(int identifier, const std::shared_ptr<Node>&);
   std::shared_ptr<Node> findNodeByName(const std::string&) const;
   std::string getName() const;
   int getIdentifier() const;
@@ -27,7 +28,7 @@ private:
   TypeDeclaration source;
   std::string name;
   int identifier;
-  std::vector<std::shared_ptr<Node>> children;
+  std::map<int, std::shared_ptr<Node>> children;
 };
 
 }

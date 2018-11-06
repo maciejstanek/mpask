@@ -14,18 +14,18 @@ namespace mpask
   {
   }
 
-  void Node::addChild(const std::shared_ptr<Node>& node)
+  void Node::addChild(int nodeIdentifier, const std::shared_ptr<Node>& node)
   {
-    children.push_back(node);
+    children[nodeIdentifier] = node;
   }
 
   shared_ptr<Node> Node::findNodeByName(const std::string& neddle) const
   {
     for (const auto& child : children) {
-      if (child->getName() == neddle) {
-        return child;
+      if (child.second->getName() == neddle) {
+        return child.second;
       }
-      if (auto result = child->findNodeByName(neddle)) {
+      if (auto result = child.second->findNodeByName(neddle)) {
         return result;
       }
     }
