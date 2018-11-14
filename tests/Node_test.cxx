@@ -98,5 +98,4 @@ TEST_F(Node_test, find_by_name)
 		"  node_1_2 -> node_1_2_2;\n"
 		"}\n"
 	);
-  cerr << d.str();
 }

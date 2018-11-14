@@ -12,12 +12,12 @@ using namespace std;
 namespace mpask
 {
   shared_ptr<Node>
-  TreeBuilder::operator()(const MIBFile& input) const
+  TreeBuilder::operator()(const shared_ptr<MIBFile>& input) const
   {
     map<string, shared_ptr<Node>> descramblingMap;
     // auto root = make_shared<Node>("mib-2", 0); // NOTE: HARDCODED
     // descramblingMap["mib-2"] = root;
-    for (const auto& type : input.types) {
+    for (const auto& type : input->types) {
       auto newNode = make_shared<Node>(type.name, type.address.value);
       newNode->setSource(type);
       descramblingMap[type.name] = newNode;

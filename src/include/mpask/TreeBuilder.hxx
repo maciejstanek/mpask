@@ -10,7 +10,7 @@ namespace mpask {
 class TreeBuilder
 {
 public:
-  std::shared_ptr<Node> operator()(const MIBFile&) const;
+  std::shared_ptr<Node> operator()(const std::shared_ptr<MIBFile>&) const;
 };
 
 }

@@ -15,7 +15,7 @@ using namespace std;
 
 namespace mpask
 {
-  MIBFile
+  shared_ptr<MIBFile>
   Parser::operator()(std::istream& input) const
   {
     // TODO: Boost Spirit parser requires std::string as an input.
@@ -30,8 +30,8 @@ namespace mpask
     string::const_iterator end = buffer.end();
     MIBFileGrammar<string::const_iterator> parser;
     boost::spirit::ascii::space_type space;
-    MIBFile result;
-    bool status = phrase_parse(iter, end, parser, space, result);
+    auto result = make_shared<MIBFile>();
+    bool status = phrase_parse(iter, end, parser, space, *result);
     if (status == false) {
       throw Exception {"Parsing grammar failed."};
     }

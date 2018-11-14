@@ -3,13 +3,14 @@
 #include "mpask/MIBFile.hxx"
 
 #include <istream>
+#include <memory>
 
 namespace mpask {
 
 class Parser
 {
 public:
-  MIBFile operator()(std::istream&) const;
+  std::shared_ptr<MIBFile> operator()(std::istream&) const;
 };
 
 }
