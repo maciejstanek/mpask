@@ -4,8 +4,8 @@
 
 #include <iostream>
 #include <string>
-#include <sstream>
-#include <streambuf>
+#include <queue>
+#include <fstream>
 
 using namespace std;
 
@@ -17,6 +17,23 @@ namespace mpask
     , const string& fileName
     ) const
   {
-    return make_shared<MIBFile>();
+    shared_ptr<MIBFile> masterStructure;
+    queue<string> remainingFiles {{fileName}};
+    while (!remainingFiles.empty()) {
+      ifstream input {dir + "/"s + remainingFiles.front() + ".mib"s};
+      auto object = Parser{}(input);
+      for (const auto& import : object->imports) {
+        if (import.second == "RFC-1212") continue; // NOTE: Hardcoding ignoring RFC-1212.mib
+        remainingFiles.push(import.second);
+      }
+      if (!masterStructure) {
+        masterStructure = move(object);
+      }
+      else {
+        masterStructure->meld(*object);
+      }
+      remainingFiles.pop();
+    }
+    return move(masterStructure);
   }
 }

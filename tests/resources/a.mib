@@ -1,0 +1,4 @@
+a DEFINITIONS ::= BEGIN
+    IMPORTS bx FROM b OBJECT-TYPE FROM RFC-1212;
+    ax OBJECT-TYPE SYNTAX bx ::= { objects 1 }
+END

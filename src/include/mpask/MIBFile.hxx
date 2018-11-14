@@ -25,6 +25,7 @@ struct MIBFile
   vector_SequenceDeclaration sequences;
   vector_TypeDeclaration types;
   vector_AliasDeclaration aliases;
+  void meld(const MIBFile&);
 };
 
 }
