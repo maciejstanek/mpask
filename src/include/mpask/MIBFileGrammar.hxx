@@ -3,8 +3,10 @@
 #include "mpask/MIBFile.hxx"
 #include "mpask/TypeDeclarationGrammar.hxx"
 #include "mpask/ImportGrammar.hxx"
+#include "mpask/ExportGrammar.hxx"
 #include "mpask/SequenceDeclarationGrammar.hxx"
 #include "mpask/AliasDeclarationGrammar.hxx"
+#include "mpask/MacroGrammar.hxx"
 
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/qi_lexeme.hpp>
@@ -47,10 +49,14 @@ namespace mpask
         >> -(
           importGrammar [boost::phoenix::ref(mibFileInst.imports) = _1] // FIXME: Only one import allowed now (and only at the top).
           )
+        >> -(
+          exportGrammar [boost::phoenix::ref(mibFileInst.exports) = _1] // FIXME: Only one import allowed now (and only at the top).
+          )
         >> *(
           typeDeclarationGrammar [boost::phoenix::push_back(boost::phoenix::ref(mibFileInst.types), _1)]
           | sequenceDeclarationGrammar [boost::phoenix::push_back(boost::phoenix::ref(mibFileInst.sequences), _1)]
           | aliasDeclarationGrammar [boost::phoenix::push_back(boost::phoenix::ref(mibFileInst.aliases), _1)]
+          | macroGrammar
           )
         >> lit("END") [_val = boost::phoenix::ref(mibFileInst)]
         ;
@@ -64,7 +70,9 @@ namespace mpask
     SequenceDeclarationGrammar<Iterator> sequenceDeclarationGrammar;
     TypeDeclarationGrammar<Iterator> typeDeclarationGrammar;
     ImportGrammar<Iterator> importGrammar;
+    ExportGrammar<Iterator> exportGrammar;
     AliasDeclarationGrammar<Iterator> aliasDeclarationGrammar;
+    MacroGrammar<Iterator> macroGrammar;
     boost::spirit::qi::rule<Iterator, MIBFile(), boost::spirit::ascii::space_type> mibFile;
     boost::spirit::qi::rule<Iterator, std::string()> name;
   };

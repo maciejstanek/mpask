@@ -38,6 +38,7 @@ TEST_F(SequenceDeclarationGrammar_test, basic)
   auto [status, result] = parse(input);
   EXPECT_EQ(status, true);
   EXPECT_EQ(result.name, "Abc"s);
+  EXPECT_EQ(result.tag, "SEQUENCE"s);
   EXPECT_EQ(result.sequence.size(), 2);
   EXPECT_NE(result.sequence.find("Def"), result.sequence.end());
   EXPECT_EQ(result.sequence["Def"].name.name, "Defdef"s);
@@ -61,4 +62,18 @@ TEST_F(SequenceDeclarationGrammar_test, object_identifier)
   EXPECT_EQ(result.sequence.size(), 2);
   EXPECT_NE(result.sequence.find("Def"), result.sequence.end());
   EXPECT_EQ(result.sequence["Def"].name.name, "OBJECT IDENTIFIER"s);
+}
+
+TEST_F(SequenceDeclarationGrammar_test, choice)
+{
+  string input {R"(
+    Abc ::=
+      CHOICE {
+        abc def
+      }
+  )"};
+  auto [status, result] = parse(input);
+  EXPECT_EQ(status, true);
+  EXPECT_EQ(result.sequence.size(), 1);
+  EXPECT_EQ(result.tag, "CHOICE"s);
 }

@@ -1,0 +1,3 @@
+import-error DEFINITIONS ::= BEGIN
+    IMPORTS stuff FROM non-existient-mib;
+END

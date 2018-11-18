@@ -65,3 +65,14 @@ TEST_F(RestrictionGrammar_test, error)
   EXPECT_EQ(restriction.left, 0);
   EXPECT_EQ(restriction.right, 0);
 }
+
+TEST_F(RestrictionGrammar_test, long)
+{
+  string input {"(0..4294967295)"};
+  auto [status, restriction] = parse(input);
+  EXPECT_EQ(status, true);
+  EXPECT_EQ(restriction.size, false);
+  EXPECT_EQ(restriction.range, true);
+  EXPECT_EQ(restriction.left, 0);
+  EXPECT_EQ(restriction.right, 4294967295);
+}

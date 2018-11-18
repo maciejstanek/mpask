@@ -13,6 +13,7 @@ TEST_F(MIBFile_test, meld)
 {
   MIBFile a;
   a.imports.push_back({{{"a"}}, "a"});
+  a.exports.push_back("a");
   SequenceDeclaration aSequence;
   aSequence.name = "a";
   a.sequences.push_back(aSequence);
@@ -25,6 +26,7 @@ TEST_F(MIBFile_test, meld)
 
   MIBFile b;
   b.imports.push_back({{{"b"}}, "b"});
+  a.exports.push_back("b");
   SequenceDeclaration bSequence;
   bSequence.name = "b";
   b.sequences.push_back(bSequence);
@@ -51,6 +53,19 @@ TEST_F(MIBFile_test, meld)
     }
   }
   EXPECT_EQ(importsCount, 2);
+
+  int exportsCount {};
+  for (const auto& export_ : a.exports) {
+    switch (exportsCount++) {
+      case 0:
+        EXPECT_EQ(export_, "a"s);
+        break;
+      case 1:
+        EXPECT_EQ(export_, "b"s);
+        break;
+    }
+  }
+  EXPECT_EQ(exportsCount, 2);
 
   int sequencesCount {};
   for (const auto& sequence : a.sequences) {

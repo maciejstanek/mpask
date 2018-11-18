@@ -100,3 +100,22 @@ TEST_F(AliasDeclarationGrammar_test, long_2)
   EXPECT_EQ(result.dataType.restriction.range, false);
   EXPECT_EQ(result.dataType.restriction.left, 4);
 }
+
+TEST_F(AliasDeclarationGrammar_test, rfc1155)
+{
+  string input {R"(
+    Counter ::= [APPLICATION 1] IMPLICIT INTEGER (0..4294967295)
+  )"};
+  auto [status, result] = parse(input);
+  EXPECT_EQ(status, true);
+  EXPECT_EQ(result.name, "Counter"s);
+  EXPECT_EQ(result.isExplicit, false);
+  EXPECT_EQ(result.isImplicit, true);
+  EXPECT_EQ(result.visibility, "APPLICATION"s);
+  EXPECT_EQ(result.typeIdentifier, 1);
+  EXPECT_EQ(result.dataType.name.isInteger, true);
+  EXPECT_EQ(result.dataType.restriction.size, false);
+  EXPECT_EQ(result.dataType.restriction.range, true);
+  EXPECT_EQ(result.dataType.restriction.left, 0);
+  EXPECT_EQ(result.dataType.restriction.right, 4294967295);
+}

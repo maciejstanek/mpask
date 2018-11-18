@@ -16,6 +16,7 @@ typedef std::map<std::string, DataType> map_string_DataType;
 struct SequenceDeclaration
 {
   std::string name;
+  std::string tag; // {SEQUENCE, CHOICE}
   map_string_DataType sequence;
 };
 
@@ -25,5 +26,6 @@ struct SequenceDeclaration
 BOOST_FUSION_ADAPT_STRUCT(
   mpask::SequenceDeclaration,
   (std::string, name)
+  (std::string, tag)
   (mpask::map_string_DataType, sequence)
 )

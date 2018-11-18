@@ -58,7 +58,7 @@ Do zaliczenia
 Raportować trzy obiekty przez SNMP, np. uptime itp.
 
 Potrzebne rzeczy:
- *plik MIB-II
+ * plik MIB-II
 
 Efekt:
  * można oglądać drzewko hierarchii (może .dot file?)
@@ -74,3 +74,7 @@ Parsowanie obiektów SMI
   STATUS mandatory
   ...
 
+TODO
+====
+
+ 1. Expand complex addresses, eg. { iso org(3) dod(3) 1 }.

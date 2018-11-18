@@ -9,8 +9,8 @@ struct Restriction
 {
   bool size {false};
   bool range {false};
-  int left {};
-  int right {};
+  long left {};
+  long right {};
 };
 
 /* bool operator==(const Restriction& l, const Restriction& r) */

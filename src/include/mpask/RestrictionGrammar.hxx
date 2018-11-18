@@ -20,7 +20,7 @@ namespace mpask
     RestrictionGrammar() : RestrictionGrammar::base_type(restriction)
     {
       using boost::spirit::qi::char_;
-      using boost::spirit::qi::int_;
+      using boost::spirit::qi::long_;
       using boost::spirit::qi::lit;
       using boost::spirit::ascii::space_type;
       using boost::spirit::qi::_1;
@@ -40,10 +40,10 @@ namespace mpask
 
       numbers.name("numbers");
       numbers =
-        int_ [ref(restrictionInst.left) = _1, ref(restrictionInst.right) = _1]
+        long_ [ref(restrictionInst.left) = _1, ref(restrictionInst.right) = _1]
         >> -(
           lit("..") [ref(restrictionInst.range) = true]
-          >> int_ [ref(restrictionInst.right) = _1]
+          >> long_ [ref(restrictionInst.right) = _1]
           )
         ;
 

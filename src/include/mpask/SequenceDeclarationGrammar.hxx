@@ -34,7 +34,7 @@ namespace mpask
       sequenceDeclaration =
         name [boost::phoenix::ref(sequenceDeclarationInst.name) = _1]
         >> lit("::=")
-        >> lit("SEQUENCE")
+        >> tag [boost::phoenix::ref(sequenceDeclarationInst.tag) = _1]
         >> lit('{')
         >> sequenceElements [boost::phoenix::ref(sequenceDeclarationInst.sequence) = _1]
         >> lit('}') [_val = boost::phoenix::ref(sequenceDeclarationInst)]
@@ -49,6 +49,13 @@ namespace mpask
         >> dataTypeGrammar
         ;
 
+      tag =
+        (
+          lit("CHOICE") [_val = "CHOICE"]
+          | lit("SEQUENCE") [_val = "SEQUENCE"]
+        )
+        ;
+
       name =
         +(alnum | char_('_') | char_('-'))
         ;
@@ -60,5 +67,6 @@ namespace mpask
     boost::spirit::qi::rule<Iterator, std::pair<std::string, DataType>(), boost::spirit::ascii::space_type> sequenceElement;
     boost::spirit::qi::rule<Iterator, std::map<std::string, DataType>(), boost::spirit::ascii::space_type> sequenceElements;
     boost::spirit::qi::rule<Iterator, std::string()> name;
+    boost::spirit::qi::rule<Iterator, std::string()> tag;
   };
 }

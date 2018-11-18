@@ -43,6 +43,7 @@ TEST_F(MIBFileGrammar_test, imports)
   string input {R"(
     Empty DEFINITIONS ::= BEGIN
       IMPORTS abc, def FROM ghi;
+      EXPORTS xd;
     END
   )"};
   auto [status, result] = parse(input);
@@ -55,6 +56,10 @@ TEST_F(MIBFileGrammar_test, imports)
     EXPECT_EQ(import.first.at(0), "abc"s);
     EXPECT_EQ(import.first.at(1), "def"s);
   }
+  EXPECT_EQ(result.exports.size(), 1);
+  for (const auto& export_ : result.exports) {
+    EXPECT_EQ(export_, "xd"s);
+  }
   EXPECT_EQ(result.types.size(), 0);
   EXPECT_EQ(result.sequences.size(), 0);
 }
@@ -64,28 +69,35 @@ TEST_F(MIBFileGrammar_test, minimal)
   string input {R"(
     Empty DEFINITIONS ::= BEGIN
       IMPORTS abc, def FROM ghi;
+      EXPORTS abcex, defex;
+      macro MACRO ::= BEGIN END
       qwe OBJECT IDENTIFIER ::= { rty 123 }
       ccc ::= SEQUENCE { ddd eee, fff ggg }
       vvv ::= INTEGER
       aaa OBJECT-TYPE ::= { bbb 333 }
       uio ::= SEQUENCE { asd fgh, zxc vbn }
       yyy ::= [PRIVATE 123] IMPLICIT INTEGER (0..22)
+      choice ::= CHOICE { sel ect, ing stuff }
     END
   )"};
   auto [status, result] = parse(input);
   EXPECT_EQ(status, true);
   EXPECT_EQ(result.name, "Empty"s);
   EXPECT_EQ(result.imports.size(), 1);
+  EXPECT_EQ(result.exports.size(), 2);
   EXPECT_EQ(result.types.size(), 2);
   EXPECT_EQ(result.types.at(1).name, "aaa"s);
   EXPECT_EQ(result.types.at(1).baseType.isObjectIdentifier, true);
   EXPECT_EQ(result.types.at(1).address.label, "bbb"s);
   EXPECT_EQ(result.types.at(1).address.value, 333);
-  EXPECT_EQ(result.sequences.size(), 2);
+  EXPECT_EQ(result.sequences.size(), 3);
   EXPECT_EQ(result.sequences.at(1).name, "uio"s);
+  EXPECT_EQ(result.sequences.at(1).tag, "SEQUENCE"s);
   EXPECT_EQ(result.sequences.at(1).sequence.size(), 2);
   EXPECT_NE(result.sequences.at(1).sequence.find("zxc"), result.sequences.at(1).sequence.end());
   EXPECT_EQ(result.sequences.at(1).sequence["zxc"].name.name, "vbn"s);
+  EXPECT_EQ(result.sequences.at(2).name, "choice"s);
+  EXPECT_EQ(result.sequences.at(2).tag, "CHOICE"s);
   EXPECT_EQ(result.aliases.size(), 2);
   EXPECT_EQ(result.aliases.at(1).name, "yyy"s);
   EXPECT_EQ(result.aliases.at(1).isExplicit, false);

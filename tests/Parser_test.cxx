@@ -129,5 +129,19 @@ TEST_F(Parser_test, skipping_comments)
 TEST_F(Parser_test, rfc1213_mib_txt)
 {
   ifstream s {"resources/RFC1213-MIB.txt"};
-  EXPECT_NO_THROW(Parser{}(s));
+  shared_ptr<MIBFile> result;
+  ASSERT_NO_THROW(result = Parser{}(s));
+  EXPECT_EQ(result->aliases.size(), 2);
+  EXPECT_EQ(result->types.size(), 201);
+  EXPECT_EQ(result->sequences.size(), 8);
+}
+
+TEST_F(Parser_test, rfc1155_smi_txt)
+{
+  ifstream s {"resources/RFC1155-SMI.txt"};
+  shared_ptr<MIBFile> result;
+  ASSERT_NO_THROW(result = Parser{}(s));
+  EXPECT_EQ(result->aliases.size(), 6);
+  EXPECT_EQ(result->types.size(), 6);
+  EXPECT_EQ(result->sequences.size(), 4);
 }
