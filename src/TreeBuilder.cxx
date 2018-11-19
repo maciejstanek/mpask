@@ -15,8 +15,23 @@ namespace mpask
   TreeBuilder::operator()(const shared_ptr<MIBFile>& input) const
   {
     map<string, shared_ptr<Node>> descramblingMap;
-    // auto root = make_shared<Node>("mib-2", 0); // NOTE: HARDCODED
-    // descramblingMap["mib-2"] = root;
+
+    // NOTE: Hardcoded root node
+    auto root = make_shared<Node>("root", -1);
+    TypeDeclaration rootType;
+    rootType.address.label = ""; // No parent
+    rootType.address.value = -1; // No parent
+    root->setSource(move(rootType));
+    descramblingMap["root"] = root;
+
+    // NOTE: Hardcoded iso node
+    auto iso = make_shared<Node>("iso", 1);
+    TypeDeclaration isoType;
+    isoType.address.label = "root";
+    isoType.address.value = 1;
+    iso->setSource(move(isoType));
+    descramblingMap["iso"] = iso;
+
     for (const auto& type : input->types) {
       auto newNode = make_shared<Node>(type.name, type.address.value);
       newNode->setSource(type);
@@ -31,7 +46,14 @@ namespace mpask
         node->second->addChild(type->getSource().address.value, type);
       }
     }
-    auto mib2 = descramblingMap.find("mib-2"); // TODO: HARDCODED
-    return mib2->second;
+    // NOTE: Hardcoded
+    /* for (const auto& [typeName, type] : descramblingMap) { */
+    /*   cerr << "Check " << typeName << endl; */
+    /*   if (type->getSource().address.label == "iso"s) { */
+    /*     cerr << "Match!" << endl; */
+    /*     iso->addChild(type->getSource().address.value, type); */
+    /*   } */
+    /* } */
+    return root;
   }
 }

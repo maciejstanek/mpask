@@ -1,6 +1,7 @@
 #include "mpask/TreeBuilder.hxx"
 
 #include "mpask/Parser.hxx"
+#include "mpask/MasterParser.hxx"
 #include "mpask/Exception.hxx"
 
 #include <gtest/gtest.h>
@@ -18,10 +19,10 @@ TEST_F(TreeBuilder_test, example_1)
 {
   stringstream input {R"(
     x DEFINITIONS ::= BEGIN
-      mib-2 OBJECT IDENTIFIER ::= { mgmt 1 }
-      aaa OBJECT IDENTIFIER ::= { mib-2 1 }
-      bbb OBJECT IDENTIFIER ::= { mib-2 2 }
-      ccc OBJECT IDENTIFIER ::= { mib-2 3 }
+      xxx OBJECT IDENTIFIER ::= { iso 123 }
+      aaa OBJECT IDENTIFIER ::= { xxx 1 }
+      bbb OBJECT IDENTIFIER ::= { xxx 2 }
+      ccc OBJECT IDENTIFIER ::= { xxx 3 }
       ddd OBJECT IDENTIFIER ::= { bbb 1 }
       eee OBJECT IDENTIFIER ::= { bbb 2 }
       fff OBJECT IDENTIFIER ::= { bbb 3 }
@@ -33,11 +34,17 @@ TEST_F(TreeBuilder_test, example_1)
   auto object = Parser{}(input);
 
   auto root = TreeBuilder{}(object);
-  ASSERT_EQ(root->getName(), "mib-2"s); // NOTE: Always the root.
-  EXPECT_EQ(root->size(), 3);
+  ASSERT_EQ(root->getName(), "root"s); // NOTE: Always "root".
+  ASSERT_EQ(root->size(), 1);
+  auto& iso = root->begin()->second;
+  ASSERT_EQ(iso->getName(), "iso"s);
+  ASSERT_EQ(iso->size(), 1);
+  auto& xxx = iso->begin()->second;
+  ASSERT_EQ(xxx->getName(), "xxx"s);
+  ASSERT_EQ(xxx->size(), 3);
   int nodeIter {};
-  shared_ptr<Node> subroot;
-  for (const auto& [identifier, node] : *root) {
+  shared_ptr<Node> sub;
+  for (const auto& [identifier, node] : *xxx) {
     switch (++nodeIter) {
       case 1:
         EXPECT_EQ(node->getName(), "aaa"s);
@@ -50,7 +57,7 @@ TEST_F(TreeBuilder_test, example_1)
         EXPECT_EQ(node->getIdentifier(), 2);
         EXPECT_EQ(identifier, 2);
         EXPECT_EQ(node->size(), 3);
-        subroot = node;
+        sub = node;
         break;
       case 3:
         EXPECT_EQ(node->getName(), "ccc"s);
@@ -61,38 +68,37 @@ TEST_F(TreeBuilder_test, example_1)
     }
   }
   EXPECT_EQ(nodeIter, 3);
-  ASSERT_NE(subroot, nullptr);
+  ASSERT_NE(sub, nullptr);
 
-  int subnodeIter {};
-  for (const auto& [identifier, subnode] : *subroot) {
-    switch (++subnodeIter) {
+  int subsubIter {};
+  for (const auto& [identifier, subsub] : *sub) {
+    switch (++subsubIter) {
       case 1:
-        EXPECT_EQ(subnode->getName(), "ddd"s);
-        EXPECT_EQ(subnode->getIdentifier(), 1);
+        EXPECT_EQ(subsub->getName(), "ddd"s);
+        EXPECT_EQ(subsub->getIdentifier(), 1);
         EXPECT_EQ(identifier, 1);
-        EXPECT_EQ(subnode->size(), 0);
+        EXPECT_EQ(subsub->size(), 0);
         break;
       case 2:
-        EXPECT_EQ(subnode->getName(), "eee"s);
-        EXPECT_EQ(subnode->getIdentifier(), 2);
+        EXPECT_EQ(subsub->getName(), "eee"s);
+        EXPECT_EQ(subsub->getIdentifier(), 2);
         EXPECT_EQ(identifier, 2);
-        EXPECT_EQ(subnode->size(), 3);
+        EXPECT_EQ(subsub->size(), 3);
         break;
       case 3:
-        EXPECT_EQ(subnode->getName(), "fff"s);
-        EXPECT_EQ(subnode->getIdentifier(), 3);
+        EXPECT_EQ(subsub->getName(), "fff"s);
+        EXPECT_EQ(subsub->getIdentifier(), 3);
         EXPECT_EQ(identifier, 3);
-        EXPECT_EQ(subnode->size(), 0);
+        EXPECT_EQ(subsub->size(), 0);
         break;
     }
   }
-  EXPECT_EQ(subnodeIter, 3);
+  EXPECT_EQ(subsubIter, 3);
 }
 
 TEST_F(TreeBuilder_test, mib)
 {
-  ifstream input {"resources/RFC1213-MIB.txt"};
-  auto object = Parser{}(input);
+  auto object = MasterParser{}("resources", "RFC1213-MIB");
   auto root = TreeBuilder{}(object);
   stringstream output;
   root->printHierarchy(output);

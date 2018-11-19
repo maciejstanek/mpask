@@ -137,7 +137,11 @@ namespace mpask
   {
     int tab = (static_cast<int>(identifiers.size()) - 1 >= 0) ? 2 * (static_cast<int>(identifiers.size()) - 1) : 0;
     auto padding = string(tab, ' ');
-    output << padding << getName() << "("  << generateOID(identifiers) << ")" << endl;
+    output << padding << getName() << "(";
+    if (getIdentifier() >= 0) {
+      output << generateOID(identifiers);
+    }
+    output << ")" << endl;
     for (const auto& child : children) {
       auto newIdentifiers = identifiers;
       newIdentifiers.push_back(child.second->getIdentifier());
