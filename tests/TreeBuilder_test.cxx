@@ -32,11 +32,25 @@ TEST_F(TreeBuilder_test, example_1)
     END
   )"};
   auto object = Parser{}(input);
-
   auto root = TreeBuilder{}(object);
+
   stringstream output;
   root->printHierarchy(output);
-  cerr << output.str();
+  EXPECT_EQ(output.str(),
+		"root()\n"
+		"  iso(1)\n"
+		"    xxx(1.123)\n"
+		"      aaa(1.123.1)\n"
+		"      bbb(1.123.2)\n"
+		"        ddd(1.123.2.1)\n"
+		"        eee(1.123.2.2)\n"
+		"          ggg(1.123.2.2.1)\n"
+		"          hhh(1.123.2.2.2)\n"
+		"          iii(1.123.2.2.3)\n"
+		"        fff(1.123.2.3)\n"
+		"      ccc(1.123.3)\n"
+	);
+
   ASSERT_EQ(root->getName(), "root"s); // NOTE: Always "root".
   ASSERT_EQ(root->size(), 1);
   auto& iso = root->begin()->second;
