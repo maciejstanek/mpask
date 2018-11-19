@@ -38,13 +38,28 @@ namespace mpask
       descramblingMap[type.name] = newNode;
     }
     for (const auto& [typeName, type] : descramblingMap) {
-      if (type->getSource().address.intermediateNodes.size() != 0) {
-        throw Exception {"Not yet capable of building a tree from an extended address ("s + typeName + ")."s};
+      auto currentParentIter = descramblingMap.find(type->getSource().address.label);
+      if (currentParentIter == descramblingMap.end()) {
+        cerr << "skipping free floating node '" << typeName << "'" << endl;
+        continue;
       }
-      auto node = descramblingMap.find(type->getSource().address.label);
-      if (node != descramblingMap.end()) {
-        node->second->addChild(type->getSource().address.value, type);
+      shared_ptr<Node> currentParent = currentParentIter->second;
+      // Expand complex address {{{
+      for (const auto& [intermediateLabel, intermediateIdentifier] : type->getSource().address.intermediateNodes) {
+        cerr << "intermediate " << intermediateLabel << "(" << intermediateIdentifier << ")" << endl;
+        auto intermediateNodeIter = descramblingMap.find(intermediateLabel);
+        if (descramblingMap.find(intermediateLabel) == descramblingMap.end()) {
+          cerr << "adding" << endl;
+          // Add node if not defined
+          descramblingMap[intermediateLabel] = make_shared<Node>(intermediateLabel, intermediateIdentifier);
+          intermediateNodeIter = descramblingMap.find(intermediateLabel);
+        }
+        auto intermediateNode = intermediateNodeIter->second;
+        currentParent->addChild(intermediateIdentifier, intermediateNode);
+        currentParent = intermediateNode;
       }
+      // }}}
+      currentParent->addChild(type->getSource().address.value, type);
     }
     return root;
   }
