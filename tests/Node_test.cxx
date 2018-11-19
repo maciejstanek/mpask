@@ -87,16 +87,16 @@ TEST_F(Node_test, find_by_name)
   n->printDotFile(d);
   EXPECT_EQ(d.str(),
 		"digraph mib {\n"
-		"  n [shape=\"box\",margin=\"0.05\",width=\"0\",heigh=\"0\",label=\"abc\\n\"];\n"
-		"  n_1 [shape=\"box\",margin=\"0.05\",width=\"0\",heigh=\"0\",label=\"def\\n1\"];\n"
-		"  n_2 [shape=\"box\",margin=\"0.05\",width=\"0\",heigh=\"0\",label=\"ghi\\n2\"];\n"
-		"  n_2_1 [shape=\"box\",margin=\"0.05\",width=\"0\",heigh=\"0\",label=\"jkl\\n2.1\"];\n"
-		"  n_2_2 [shape=\"box\",margin=\"0.05\",width=\"0\",heigh=\"0\",label=\"mno\\n2.2\"];\n"
+		"  n [shape=\"record\",margin=\"0.1\",width=\"0\",height=\"0\",label=\"{<name>abc|<oid>}\"];\n"
+		"  n_1 [shape=\"record\",margin=\"0.1\",width=\"0\",height=\"0\",label=\"{<name>def|<oid>1}\"];\n"
+		"  n_2 [shape=\"record\",margin=\"0.1\",width=\"0\",height=\"0\",label=\"{<name>ghi|<oid>2}\"];\n"
+		"  n_2_1 [shape=\"record\",margin=\"0.1\",width=\"0\",height=\"0\",label=\"{<name>jkl|<oid>2.1}\"];\n"
+		"  n_2_2 [shape=\"record\",margin=\"0.1\",width=\"0\",height=\"0\",label=\"{<name>mno|<oid>2.2}\"];\n"
 		"\n"
-		"  n -> n_1;\n"
-		"  n -> n_2;\n"
-		"  n_2 -> n_2_1;\n"
-		"  n_2 -> n_2_2;\n"
+		"  n:oid -> n_1:name;\n"
+		"  n:oid -> n_2:name;\n"
+		"  n_2:oid -> n_2_1:name;\n"
+		"  n_2:oid -> n_2_2:name;\n"
 		"}\n"
 	);
   ofstream dot;
