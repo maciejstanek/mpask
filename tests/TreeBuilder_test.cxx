@@ -34,6 +34,9 @@ TEST_F(TreeBuilder_test, example_1)
   auto object = Parser{}(input);
 
   auto root = TreeBuilder{}(object);
+  stringstream output;
+  root->printHierarchy(output);
+  cerr << output.str();
   ASSERT_EQ(root->getName(), "root"s); // NOTE: Always "root".
   ASSERT_EQ(root->size(), 1);
   auto& iso = root->begin()->second;

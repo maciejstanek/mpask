@@ -46,14 +46,6 @@ namespace mpask
         node->second->addChild(type->getSource().address.value, type);
       }
     }
-    // NOTE: Hardcoded
-    /* for (const auto& [typeName, type] : descramblingMap) { */
-    /*   cerr << "Check " << typeName << endl; */
-    /*   if (type->getSource().address.label == "iso"s) { */
-    /*     cerr << "Match!" << endl; */
-    /*     iso->addChild(type->getSource().address.value, type); */
-    /*   } */
-    /* } */
     return root;
   }
 }

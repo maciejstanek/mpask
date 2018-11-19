@@ -71,7 +71,7 @@ namespace mpask
 
   void Node::printDotFile(ostream& output) const
   {
-    vector<int> identifiers {getIdentifier()};
+    vector<int> identifiers {};
     output << "digraph mib {" << endl;
     printDotFileNodes(identifiers, output); 
     output << endl;
@@ -82,7 +82,7 @@ namespace mpask
   string Node::generateDotFileNodeName(vector<int> identifiers) const
   {
     stringstream nodeName;
-    nodeName << "node";
+    nodeName << "n";
     for (auto singleIdentifier : identifiers) {
       nodeName << "_" << singleIdentifier;
     }
@@ -106,7 +106,7 @@ namespace mpask
   void Node::printDotFileNodes(vector<int> identifiers, ostream& output) const
   {
     output << "  " << generateDotFileNodeName(identifiers)
-      << R"( [shape="box",label=")" << getName() << R"(\n)"
+      << R"( [shape="box",margin="0.05",width="0",heigh="0",label=")" << getName() << R"(\n)"
       << generateOID(identifiers) << R"("];)" << endl;
     for (const auto& child : children) {
       auto newIdentifiers = identifiers;
@@ -129,13 +129,13 @@ namespace mpask
 
   void Node::printHierarchy(ostream& output) const
   {
-    vector<int> identifiers {getIdentifier()};
+    vector<int> identifiers {}; //{getIdentifier()};
     printHierarchy(identifiers, output); 
   }
 
   void Node::printHierarchy(vector<int> identifiers, ostream& output) const
   {
-    int tab = (static_cast<int>(identifiers.size()) - 1 >= 0) ? 2 * (static_cast<int>(identifiers.size()) - 1) : 0;
+    int tab = (static_cast<int>(identifiers.size()) >= 0) ? 2 * static_cast<int>(identifiers.size()) : 0;
     auto padding = string(tab, ' ');
     output << padding << getName() << "(";
     if (getIdentifier() >= 0) {

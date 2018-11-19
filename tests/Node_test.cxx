@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 #include <sstream>
+#include <fstream>
 
 using namespace std;
 using namespace mpask;
@@ -76,26 +77,30 @@ TEST_F(Node_test, find_by_name)
   stringstream s;   
   n->printHierarchy(s);
   EXPECT_EQ(s.str(),
-    "abc(1)\n"
-    "  def(1.1)\n"
-    "  ghi(1.2)\n"
-    "    jkl(1.2.1)\n"
-    "    mno(1.2.2)\n"
+    "abc()\n"
+    "  def(1)\n"
+    "  ghi(2)\n"
+    "    jkl(2.1)\n"
+    "    mno(2.2)\n"
   );
   stringstream d;   
   n->printDotFile(d);
   EXPECT_EQ(d.str(),
 		"digraph mib {\n"
-		"  node_1 [shape=\"box\",label=\"abc\\n1\"];\n"
-		"  node_1_1 [shape=\"box\",label=\"def\\n1.1\"];\n"
-		"  node_1_2 [shape=\"box\",label=\"ghi\\n1.2\"];\n"
-		"  node_1_2_1 [shape=\"box\",label=\"jkl\\n1.2.1\"];\n"
-		"  node_1_2_2 [shape=\"box\",label=\"mno\\n1.2.2\"];\n"
+		"  n [shape=\"box\",margin=\"0.05\",width=\"0\",heigh=\"0\",label=\"abc\\n\"];\n"
+		"  n_1 [shape=\"box\",margin=\"0.05\",width=\"0\",heigh=\"0\",label=\"def\\n1\"];\n"
+		"  n_2 [shape=\"box\",margin=\"0.05\",width=\"0\",heigh=\"0\",label=\"ghi\\n2\"];\n"
+		"  n_2_1 [shape=\"box\",margin=\"0.05\",width=\"0\",heigh=\"0\",label=\"jkl\\n2.1\"];\n"
+		"  n_2_2 [shape=\"box\",margin=\"0.05\",width=\"0\",heigh=\"0\",label=\"mno\\n2.2\"];\n"
 		"\n"
-		"  node_1 -> node_1_1;\n"
-		"  node_1 -> node_1_2;\n"
-		"  node_1_2 -> node_1_2_1;\n"
-		"  node_1_2 -> node_1_2_2;\n"
+		"  n -> n_1;\n"
+		"  n -> n_2;\n"
+		"  n_2 -> n_2_1;\n"
+		"  n_2 -> n_2_2;\n"
 		"}\n"
 	);
+  ofstream dot;
+  dot.open("node_test.dot");
+  n->printDotFile(dot);
+  dot.close();
 }
