@@ -3,7 +3,6 @@
 #include "mpask/Exception.hxx"
 #include "mpask/TypeDeclaration.hxx"
 
-#include <iostream>
 #include <memory>
 #include <map>
 
@@ -37,19 +36,18 @@ namespace mpask
       newNode->setSource(type);
       descramblingMap[type.name] = newNode;
     }
-    for (const auto& [typeName, type] : descramblingMap) {
+    for (const auto& typeEntry : descramblingMap) {
+      auto type = typeEntry.second;
       auto currentParentIter = descramblingMap.find(type->getSource().address.label);
       if (currentParentIter == descramblingMap.end()) {
-        cerr << "skipping free floating node '" << typeName << "'" << endl;
         continue;
       }
       shared_ptr<Node> currentParent = currentParentIter->second;
-      // Expand complex address {{{
+
+      // Expand complex address
       for (const auto& [intermediateLabel, intermediateIdentifier] : type->getSource().address.intermediateNodes) {
-        cerr << "intermediate " << intermediateLabel << "(" << intermediateIdentifier << ")" << endl;
         auto intermediateNodeIter = descramblingMap.find(intermediateLabel);
         if (descramblingMap.find(intermediateLabel) == descramblingMap.end()) {
-          cerr << "adding" << endl;
           // Add node if not defined
           descramblingMap[intermediateLabel] = make_shared<Node>(intermediateLabel, intermediateIdentifier);
           intermediateNodeIter = descramblingMap.find(intermediateLabel);
@@ -58,7 +56,7 @@ namespace mpask
         currentParent->addChild(intermediateIdentifier, intermediateNode);
         currentParent = intermediateNode;
       }
-      // }}}
+
       currentParent->addChild(type->getSource().address.value, type);
     }
     return root;
