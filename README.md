@@ -88,3 +88,53 @@ unflatten -l 6 -f $MPASK_ROOT/build/tests/mib.dot > mib_fixed.dot
 # xdot mib_fixed.dot # view results
 dot -Tpng mib_fixed.dot -o mib_fixed.png
 ```
+Complex address
+===============
+
+`internet OBJECT IDENTIFIER ::= { iso org(3) dod(6) 1 }`
+
+Scrambler state
+---------------
+
+```
+{
+  {"root", {<root(-1)>, {<iso(1)>}},
+  {"iso", {<iso(1)>, {}},
+  {"internet", {<internet(1)>, {}} // Have the complex address
+}
+```
+
+Scrambler target
+----------------
+
+```
+{
+  {"root", {<root(-1)>, {<iso(1)>}},
+  {"iso", {<iso(1)>, {org(3)>}},
+  {"org", {<org(3)>, {dod(6)>}},
+  {"dod", {<dod(6)>, {internet(1)>},
+  {"internet", {<internet(1)>, {}}
+}
+```
+
+Scrambler target for simple address only
+----------------------------------------
+
+```
+{
+  {"root", {<root(-1)>, {<iso(1)>}},
+  {"iso", {<iso(1)>, {internet(1)>}},
+  {"internet", {<internet(1)>, {}}
+}
+```
+
+Conclusions
+-----------
+
+ * Create all missing intermediate nodes
+   - `org(3)` and `dod(6)` in this case
+   - `iso(1)` already exists
+ * Skew chain them
+   - `iso(1)` has child `org(3)`
+   - `org(3)` has child `dod(6)`
+   - `dod(6)` has child `internet(1)`
