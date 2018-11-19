@@ -77,4 +77,14 @@ Parsowanie obiektów SMI
 TODO
 ====
 
- 1. Expand complex addresses, eg. { iso org(3) dod(3) 1 }.
+ 1. ~~Expand complex addresses, eg. { iso org(3) dod(3) 1 }.~~
+
+USAGE - GRAPHS
+==============
+
+To make a visualization of a _mib-2_ tree run all the tests and then execute the following:
+```
+unflatten -l 6 -f $MPASK_ROOT/build/tests/mib.dot > mib_fixed.dot
+# xdot mib_fixed.dot # view results
+dot -Tpng mib_fixed.dot -o mib_fixed.png
+```

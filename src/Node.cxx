@@ -106,8 +106,9 @@ namespace mpask
   void Node::printDotFileNodes(vector<int> identifiers, ostream& output) const
   {
     output << "  " << generateDotFileNodeName(identifiers)
-      << R"( [shape="box",margin="0.05",width="0",heigh="0",label=")" << getName() << R"(\n)"
-      << generateOID(identifiers) << R"("];)" << endl;
+      << R"( [shape="record",margin="0.1",width="0",height="0",label="{<name>)"
+      << getName() << "|<oid>" << generateOID(identifiers) << R"(}"];)"
+      << endl;
     for (const auto& child : children) {
       auto newIdentifiers = identifiers;
       newIdentifiers.push_back(child.second->getIdentifier());
@@ -122,7 +123,7 @@ namespace mpask
       auto newIdentifiers = identifiers;
       newIdentifiers.push_back(child.second->getIdentifier());
       auto subnodeName = child.second->generateDotFileNodeName(newIdentifiers);
-      output << "  " << nodeName << " -> " << subnodeName << ";" << endl;
+      output << "  " << nodeName << ":oid -> " << subnodeName << ":name;" << endl;
       child.second->printDotFileConnections(newIdentifiers, output);
     }
   }
