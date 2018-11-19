@@ -9,18 +9,18 @@ using namespace std;
 
 namespace mpask
 {
-  Node::Node(const std::string& newName, int newIdentifier)
+  Node::Node(const string& newName, int newIdentifier)
     : name {newName},
       identifier {newIdentifier}
   {
   }
 
-  void Node::addChild(int nodeIdentifier, const std::shared_ptr<Node>& node)
+  void Node::addChild(int nodeIdentifier, const shared_ptr<Node>& node)
   {
     children[nodeIdentifier] = node;
   }
 
-  shared_ptr<Node> Node::findNodeByName(const std::string& neddle) const
+  shared_ptr<Node> Node::findNodeByName(const string& neddle) const
   {
     for (const auto& child : children) {
       if (child.second->getName() == neddle) {
@@ -34,7 +34,7 @@ namespace mpask
     return empty;
   }
 
-  std::string Node::getName() const
+  string Node::getName() const
   {
     return name;
   }
@@ -44,12 +44,12 @@ namespace mpask
     return identifier;
   }
 
-  Node::Iterator Node::begin()
+  Node::Iterator Node::begin() const
   {
     return children.begin();
   }
 
-  Node::Iterator Node::end()
+  Node::Iterator Node::end() const
   {
     return children.end();
   }
@@ -148,5 +148,92 @@ namespace mpask
       newIdentifiers.push_back(child.second->getIdentifier());
       child.second->printHierarchy(newIdentifiers, output);
     }
+  }
+
+  shared_ptr<Node>
+  Node::findNodeByOID(const string& oid) const
+  {
+    auto oidVector = stringToOid(oid);
+    return findNodeByOID(oidVector, oidVector.begin());
+  }
+
+  shared_ptr<Node>
+  Node::findNodeByOID(const vector<int>& oid) const
+  {
+    return findNodeByOID(oid, oid.begin());
+  }
+
+  shared_ptr<Node>
+  Node::findNodeByOID(const vector<int>& oid, vector<int>::const_iterator current) const
+  {
+    auto next = find(*current);
+    if (next == end()) {
+      throw Exception {"Could not find OID '"s + oidToString(oid) + "'. "s
+        + "Failed on searching for '"s + oidToString(oid.begin(), current + 1) + "'."};
+    }
+    if (++current == oid.end()) {
+      return next->second;
+    }
+    return next->second->findNodeByOID(oid, current);
+  }
+
+  Node::Iterator
+  Node::find(int id) const
+  {
+    return children.find(id);
+  }
+
+  string
+  Node::oidToString(const vector<int>& oid) const
+  {
+    return oidToString(oid.begin(), oid.end());
+  }
+
+  string
+  Node::oidToString(vector<int>::const_iterator beginIter, vector<int>::const_iterator endIter) const
+  {
+    bool first {true};
+    string message;
+    for (auto iter = beginIter; iter != endIter; ++iter) {
+      if (!first) {
+        message += ".";
+      }
+      message += to_string(*iter);
+      if (first) {
+        first = false;
+      }
+    }
+    return message;
+  }
+
+  vector<int>
+  Node::stringToOid(const string& rawOid) const
+  {
+    istringstream oidStream(rawOid);
+    string id;
+    vector<int> oid;
+    while(getline(oidStream, id, '.')) {
+      oid.push_back(stoi(id));
+    }
+    return oid;
+  }
+
+  vector<int>
+  Node::findOidByName(const string& searchedName) const
+  {
+    // FIXME: Should be BFS, is DFS.
+    for (auto iter = begin(); iter != end(); ++iter) {
+      auto node = iter->second;
+      vector<int> oid {node->getIdentifier()};
+      if (node->getName() == searchedName) {
+        return oid;
+      }
+      auto next = node->findOidByName(searchedName);
+      if (next.size() > 0) {
+        oid.insert(oid.end(), next.begin(), next.end());
+        return oid;
+      }
+    }
+    return {};
   }
 }

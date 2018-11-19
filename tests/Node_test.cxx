@@ -2,6 +2,8 @@
 
 #include "mpask/Exception.hxx"
 #include "mpask/TypeDeclaration.hxx"
+#include "mpask/TreeBuilder.hxx"
+#include "mpask/MasterParser.hxx"
 
 #include <gtest/gtest.h>
 #include <memory>
@@ -103,4 +105,50 @@ TEST_F(Node_test, find_by_name)
   dot.open("node_test.dot");
   n->printDotFile(dot);
   dot.close();
+}
+
+TEST_F(Node_test, oid_conversions)
+{
+  Node n {{}, {}};
+  vector<int> oidVector {1, 2, 3, 4};
+  string oidString {"1.2.3.4"};
+  EXPECT_EQ(n.oidToString(oidVector), oidString);
+  EXPECT_EQ(n.stringToOid(oidString), oidVector);
+  EXPECT_THROW(n.stringToOid("1.abc.3.4"), std::invalid_argument); // FIXME: Should handle this as a node name. Now throwing an exception.
+}
+
+TEST_F(Node_test, get_by_oid)
+{
+  auto object = MasterParser{}("resources", "simple");
+  auto root = TreeBuilder{}(object);
+
+  try {
+    root->findNodeByOID(vector {1, 9, 12, 1});
+    FAIL() << "should throw";
+  }
+  catch (const Exception &e) {
+    EXPECT_EQ(e.what(), "Could not find OID '1.9.12.1'. Failed on searching for '1.9.12'."s);
+  }
+
+  shared_ptr<Node> node;
+  ASSERT_NO_THROW(node = root->findNodeByOID(vector {1, 9, 2, 3}));
+  EXPECT_EQ(node->getName(), "fff"s);
+
+  shared_ptr<Node> node2;
+  ASSERT_NO_THROW(node2 = root->findNodeByOID("1.9.2.3"));
+  EXPECT_EQ(node2->getName(), "fff"s);
+}
+
+TEST_F(Node_test, get_by_name)
+{
+  auto object = MasterParser{}("resources", "simple");
+  auto root = TreeBuilder{}(object);
+
+  vector<int> result;
+  ASSERT_NO_THROW(result = root->findOidByName("fff"));
+  ASSERT_EQ(result.size(), 4);
+  EXPECT_EQ(result[0], 1);
+  EXPECT_EQ(result[1], 9);
+  EXPECT_EQ(result[2], 2);
+  EXPECT_EQ(result[3], 3);
 }

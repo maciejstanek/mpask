@@ -1,0 +1,12 @@
+simple DEFINITIONS ::= BEGIN
+    test OBJECT IDENTIFIER ::= { iso 9 }
+    aaa OBJECT IDENTIFIER ::= { test 1 }
+    bbb OBJECT IDENTIFIER ::= { test 2 }
+    ccc OBJECT IDENTIFIER ::= { test 3 }
+    ddd OBJECT IDENTIFIER ::= { bbb 1 }
+    eee OBJECT IDENTIFIER ::= { bbb 2 }
+    fff OBJECT IDENTIFIER ::= { bbb 3 }
+    ggg OBJECT IDENTIFIER ::= { eee 1 }
+    hhh OBJECT IDENTIFIER ::= { eee 2 }
+    iii OBJECT IDENTIFIER ::= { eee 3 }
+END
