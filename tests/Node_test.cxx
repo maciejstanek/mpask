@@ -85,6 +85,15 @@ TEST_F(Node_test, find_by_name)
     "    jkl(2.1)\n"
     "    mno(2.2)\n"
   );
+  stringstream s2;   
+  n->printHierarchy(s2, "-  ");
+  EXPECT_EQ(s2.str(),
+    "abc()\n"
+    "-  def(1)\n"
+    "-  ghi(2)\n"
+    "-  -  jkl(2.1)\n"
+    "-  -  mno(2.2)\n"
+  );
   stringstream d;   
   n->printDotFile(d);
   EXPECT_EQ(d.str(),

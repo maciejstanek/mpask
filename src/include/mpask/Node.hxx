@@ -25,8 +25,8 @@ public:
   int size() const;
   void setSource(const TypeDeclaration&);
   const TypeDeclaration& getSource() const; // FIXME: Make a pointer or reference.
-  void printHierarchy(std::vector<int> identifiers, std::ostream&) const;
-  void printHierarchy(std::ostream&) const;
+  void printHierarchy(std::vector<int> identifiers, std::ostream&, const std::string& tab) const;
+  void printHierarchy(std::ostream&, const std::string& tab = "  ") const;
   std::string generateOID(std::vector<int> identifiers) const;
   void printDotFile(std::ostream& output) const;
   void printDotFileNodes(std::vector<int> identifiers, std::ostream& output) const;

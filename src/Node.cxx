@@ -128,16 +128,19 @@ namespace mpask
     }
   }
 
-  void Node::printHierarchy(ostream& output) const
+  void Node::printHierarchy(ostream& output, const string& tab) const
   {
-    vector<int> identifiers {}; //{getIdentifier()};
-    printHierarchy(identifiers, output); 
+    vector<int> identifiers {};
+    printHierarchy(identifiers, output, tab); 
   }
 
-  void Node::printHierarchy(vector<int> identifiers, ostream& output) const
+  void Node::printHierarchy(vector<int> identifiers, ostream& output, const string& tab) const
   {
-    int tab = (static_cast<int>(identifiers.size()) >= 0) ? 2 * static_cast<int>(identifiers.size()) : 0;
-    auto padding = string(tab, ' ');
+    int tabCount = static_cast<int>(identifiers.size());
+    string padding;
+    while (--tabCount >= 0) {
+      padding += tab;
+    }
     output << padding << getName() << "(";
     if (getIdentifier() >= 0) {
       output << generateOID(identifiers);
@@ -146,7 +149,7 @@ namespace mpask
     for (const auto& child : children) {
       auto newIdentifiers = identifiers;
       newIdentifiers.push_back(child.second->getIdentifier());
-      child.second->printHierarchy(newIdentifiers, output);
+      child.second->printHierarchy(newIdentifiers, output, tab);
     }
   }
 
