@@ -60,7 +60,7 @@ main(int argc, char *argv[])
   cerr << "[DBG] Calling tree builder" << endl;
   auto root = TreeBuilder{}(object);
   cerr << "[DBG] Printing tree hierarchy" << endl;
-  root->printHierarchy(cout);
+  root->printHierarchy(cout, "-  ");
 
   string dotFile {workingDirectory + "/"s + fileName + ".dot"s};
   cerr << "[DBG] Printing dot file to '" << dotFile << "'" << endl;
