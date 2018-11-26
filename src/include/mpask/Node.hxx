@@ -40,6 +40,7 @@ public:
   std::string oidToString(const std::vector<int>&) const;
   std::string oidToString(std::vector<int>::const_iterator beginIter, std::vector<int>::const_iterator endIter) const;
   std::vector<int> stringToOid(const std::string&) const;
+  void printNode(std::ostream&) const;
 private:
   TypeDeclaration source;
   std::string name;

@@ -10,6 +10,7 @@
 #include <vector>
 #include <tuple>
 #include <map>
+#include <ostream>
 
 namespace mpask {
 
@@ -22,6 +23,8 @@ struct DataType
   map_string_int integerValues;
   Restriction restriction;
 };
+
+std::ostream& operator<<(std::ostream&, const DataType&);
 
 }
 

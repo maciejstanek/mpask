@@ -239,4 +239,10 @@ namespace mpask
     }
     return {};
   }
+
+  void
+  Node::printNode(std::ostream& output) const
+  {
+    output << source;
+  }
 }

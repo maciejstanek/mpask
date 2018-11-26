@@ -2,6 +2,7 @@
 
 #include <boost/fusion/adapted/struct.hpp>
 #include <string>
+#include <ostream>
 
 namespace mpask {
 
@@ -12,6 +13,8 @@ struct Restriction
   long left {};
   long right {};
 };
+
+std::ostream& operator<<(std::ostream&, const Restriction&);
 
 /* bool operator==(const Restriction& l, const Restriction& r) */
 /* { */

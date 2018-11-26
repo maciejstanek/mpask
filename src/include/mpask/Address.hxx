@@ -18,6 +18,8 @@ struct Address
   int value;
 };
 
+std::ostream& operator<<(std::ostream&, const Address&);
+
 }
 
 // TODO: Is it needed?

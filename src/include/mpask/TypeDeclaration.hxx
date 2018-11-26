@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 #include <tuple>
+#include <ostream>
 
 namespace mpask {
 
@@ -27,6 +28,8 @@ struct TypeDeclaration
   vector_string indices;
   Address address;
 };
+
+std::ostream& operator<<(std::ostream&, const TypeDeclaration&);
 
 }
 
