@@ -32,6 +32,8 @@ TEST_F(Kober_test, octet_string)
   auto [status, result] = parse(input);
   ASSERT_EQ(status, true);
   auto coded = Kober(result)("abcd");
+  vector<unsigned char> golden {};
+  ASSERT_EQ(coded, golden);
 }
 
 TEST_F(Kober_test, integer)
@@ -40,6 +42,8 @@ TEST_F(Kober_test, integer)
   auto [status, result] = parse(input);
   ASSERT_EQ(status, true);
   auto coded = Kober(result)("1234");
+  vector<unsigned char> golden {};
+  ASSERT_EQ(coded, golden);
 }
 
 TEST_F(Kober_test, null)
@@ -48,4 +52,6 @@ TEST_F(Kober_test, null)
   auto [status, result] = parse(input);
   ASSERT_EQ(status, true);
   auto coded = Kober(result)("");
+  vector<unsigned char> golden {0x05, 0x00};
+  ASSERT_EQ(coded, golden);
 }
