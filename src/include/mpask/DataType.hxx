@@ -19,7 +19,7 @@ typedef std::map<std::string, int> map_string_int;
 struct DataType
 {
   DataTypeName name;
-  bool isSequence {false}; // SEQUENCE OF 'name'
+  std::string variant {}; // SEQUENCE, CHOICE, null
   map_string_int integerValues;
   Restriction restriction;
 };
@@ -32,7 +32,7 @@ std::ostream& operator<<(std::ostream&, const DataType&);
 BOOST_FUSION_ADAPT_STRUCT(
   mpask::DataType,
   (mpask::DataTypeName, name)
-  (bool, isSequence)
+  (std::string, variant)
   (mpask::map_string_int, integerValues)
   (mpask::Restriction, restriction)
 )

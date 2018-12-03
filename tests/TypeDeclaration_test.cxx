@@ -44,7 +44,7 @@ TEST_F(TypeDeclaration_test, ostream)
     "\n  \"base_type\": \"OCTET OF VIOLIN STRINGS\","
     "\n  \"syntax\": {"
     "\n    \"name\": \"\","
-    "\n    \"variant\": \"CHOICE\","
+    "\n    \"variant\": \"\","
     "\n    \"integer_values\": {"
     "\n    },"
     "\n    \"restriction\": {"

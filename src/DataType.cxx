@@ -22,7 +22,7 @@ namespace mpask
 
     return output << "{"
       << "\n    \"name\": \"" << type.name.name << "\","
-      << "\n    \"variant\": \"" << (type.isSequence ? "SEQUENCE" : "CHOICE") << "\","
+      << "\n    \"variant\": \"" << type.variant << "\","
       << integers.str()
       << "\n    \"restriction\": " << type.restriction
       << "\n  }";

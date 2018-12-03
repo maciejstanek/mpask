@@ -30,7 +30,7 @@ TEST_F(DataTypeGrammar_test, basic)
   auto [status, result] = parse(input);
   EXPECT_EQ(status, true);
   EXPECT_EQ(result.name.name, "INTEGER"s);
-  EXPECT_EQ(result.isSequence, false);
+  EXPECT_EQ(result.variant, "");
   EXPECT_EQ(result.restriction.left, 0);
   EXPECT_EQ(result.restriction.right, 0);
   EXPECT_EQ(result.restriction.size, false);
@@ -44,7 +44,7 @@ TEST_F(DataTypeGrammar_test, basic_2)
   auto [status, result] = parse(input);
   EXPECT_EQ(status, true);
   EXPECT_EQ(result.name.name, "abc"s);
-  EXPECT_EQ(result.isSequence, false);
+  EXPECT_EQ(result.variant, "");
   EXPECT_EQ(result.restriction.left, 0);
   EXPECT_EQ(result.restriction.right, 0);
   EXPECT_EQ(result.restriction.size, false);
@@ -58,7 +58,7 @@ TEST_F(DataTypeGrammar_test, sequence_of)
   auto [status, result] = parse(input);
   EXPECT_EQ(status, true);
   EXPECT_EQ(result.name.name, "abc"s);
-  EXPECT_EQ(result.isSequence, true);
+  EXPECT_EQ(result.variant, "SEQUENCE");
   EXPECT_EQ(result.restriction.left, 0);
   EXPECT_EQ(result.restriction.right, 0);
   EXPECT_EQ(result.restriction.size, false);
@@ -67,13 +67,21 @@ TEST_F(DataTypeGrammar_test, sequence_of)
   EXPECT_EQ(result.integerValues.size(), 0);
 }
 
+TEST_F(DataTypeGrammar_test, choice_of)
+{
+  string input {"CHOICE OF abc"};
+  auto [status, result] = parse(input);
+  EXPECT_EQ(status, true);
+  EXPECT_EQ(result.variant, "CHOICE");
+}
+
 TEST_F(DataTypeGrammar_test, integer_with_values)
 {
   string input {"INTEGER {a(1),b(2)}"};
   auto [status, result] = parse(input);
   EXPECT_EQ(status, true);
   EXPECT_EQ(result.name.name, "INTEGER"s);
-  EXPECT_EQ(result.isSequence, false);
+  EXPECT_EQ(result.variant, "");
   EXPECT_EQ(result.restriction.left, 0);
   EXPECT_EQ(result.restriction.right, 0);
   EXPECT_EQ(result.restriction.size, false);
@@ -87,7 +95,7 @@ TEST_F(DataTypeGrammar_test, string)
   auto [status, result] = parse(input);
   EXPECT_EQ(status, true);
   EXPECT_EQ(result.name.name, "DisplayString"s);
-  EXPECT_EQ(result.isSequence, false);
+  EXPECT_EQ(result.variant, "");
   EXPECT_EQ(result.restriction.left, 1);
   EXPECT_EQ(result.restriction.right, 10);
   EXPECT_EQ(result.restriction.size, true);

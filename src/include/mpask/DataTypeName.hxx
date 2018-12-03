@@ -22,7 +22,6 @@ struct DataTypeName
 BOOST_FUSION_ADAPT_STRUCT(
   mpask::DataTypeName,
   (std::string, name)
-  (bool, isSequence)
   (bool, isOctetString)
   (bool, isObjectIdentifier)
   (bool, isNull)

@@ -18,7 +18,7 @@ TEST_F(DataType_test, ostream_null)
   s << t;
   EXPECT_EQ(s.str(), "{"
     "\n    \"name\": \"\","
-    "\n    \"variant\": \"CHOICE\","
+    "\n    \"variant\": \"\","
     "\n    \"integer_values\": {"
     "\n    },"
     "\n    \"restriction\": {"
@@ -35,14 +35,14 @@ TEST_F(DataType_test, ostream_not_null)
 {
   DataType t;
   t.name.name = "example_data_type_name";
-  t.isSequence = true;
+  t.variant = "seq";
   t.integerValues = {{"abc", 123}, {"def", 456}};
   // r.restriction = DEFAULT;
   stringstream s;
   s << t;
   EXPECT_EQ(s.str(), "{"
     "\n    \"name\": \"example_data_type_name\","
-    "\n    \"variant\": \"SEQUENCE\","
+    "\n    \"variant\": \"seq\","
     "\n    \"integer_values\": {"
     "\n      \"abc\": 123,"
     "\n      \"def\": 456"

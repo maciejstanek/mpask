@@ -45,8 +45,11 @@ namespace mpask
         ;
 
       sequenceOf =
-        lit("SEQUENCE")
-        >> lit("OF") [boost::phoenix::ref(dataTypeInst.isSequence) = true]
+        (
+          lit("SEQUENCE") [boost::phoenix::ref(dataTypeInst.variant) = "SEQUENCE"]
+          | lit("CHOICE") [boost::phoenix::ref(dataTypeInst.variant) = "CHOICE"]
+        )
+        >> lit("OF")
         ;
 
       name =
