@@ -1,6 +1,7 @@
 #include "mpask/Kober.hxx"
 
 #include <iostream>
+#include <stdexcept>
 
 using namespace std;
 
@@ -46,20 +47,45 @@ namespace mpask
   vector<unsigned char>
   Kober::encodeNull() const
   {
-    return {0x05, 0x00};
+    auto tag = static_cast<unsigned char>(0x05);
+    vector<unsigned char> coded;
+    coded.push_back(calculateVisibilityBytes() | tag);
+    coded.push_back(0x00);
+    return coded;
   }
 
   vector<unsigned char>
   Kober::encodeInteger(const string& input) const
   {
-    cerr << "TODO: encode integer" << endl;
-    return {};
+    // TODO: Use dynamic length as a backup option only if the range/size is not provided
+    auto tag = static_cast<unsigned char>(0x02);
+    vector<unsigned char> coded;
+    coded.push_back(calculateVisibilityBytes() | tag);
+    unsigned long inputConverted = stoul(input);
+    auto inputConvertedCopy = inputConverted;
+    unsigned char length = 0; // Can be assumed it will never be > 127; thus a basic length encoding will be used
+    while (inputConvertedCopy) {
+      inputConvertedCopy = (inputConvertedCopy >> 8);
+      ++length;
+    }
+    coded.push_back(length);
+    auto insertionPoint = coded.end();
+    for (int i = 0; i < length; ++i) {
+      auto maskByteShift = 8 * i;
+      auto currentMask = 0xffUL << maskByteShift;
+      unsigned char currentByte = static_cast<unsigned char>((inputConverted & currentMask) >> maskByteShift);
+      insertionPoint = coded.insert(insertionPoint, currentByte);
+    }
+    return coded;
   }
 
   vector<unsigned char>
   Kober::encodeOctetString(const string& input) const
   {
-    cerr << "TODO: encode octet string" << endl;
-    return {};
+    auto tag = static_cast<unsigned char>(0x04);
+    vector<unsigned char> coded;
+    coded.push_back(calculateVisibilityBytes() | tag);
+    throw runtime_error {"Encoding octet strings not implemented."};
+    return coded;
   }
 }
