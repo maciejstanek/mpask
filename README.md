@@ -146,13 +146,13 @@ Schema:
 ```
 Xxx DEFINITIONS AUTOMATIC TAGS ::= 
 BEGIN
-	Aaa ::= [1] IMPLICIT INTEGER
-	Bbb ::= [1] EXPLICIT INTEGER
-	Yyy ::= SEQUENCE
-	{
-		zzz Aaa
-		-- zzz Bbb
-	}
+  Aaa ::= [1] IMPLICIT INTEGER
+  Bbb ::= [1] EXPLICIT INTEGER
+  Yyy ::= SEQUENCE
+  {
+    zzz Aaa
+    -- zzz Bbb
+  }
 END
 ```
 
@@ -165,20 +165,20 @@ value Yyy ::= {
 
 implicit (Aaa):
 ```
-	universal contructed sequence         30
-	length 4                              04
-		universal primitive zero?           80
-		length 2                            02
+  universal contructed sequence         30
+  length 4                              04
+    universal primitive zero?           80
+    length 2                            02
       value 255                         00 FF
 ```
 
 explicit (Bbb):
 ```
-	universal contructed sequence         30
-	length 6                              06
-		context-specific contructed zero?   A0
-		length 4                            04
-			universal primitive integer   		02
-			length 2                      		02
-			value                         		00 FF
+  universal contructed sequence         30
+  length 6                              06
+    context-specific contructed zero?   A0
+    length 4                            04
+      universal primitive integer       02
+      length 2                          02
+      value                             00 FF
 ```
