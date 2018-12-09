@@ -2,6 +2,8 @@
 
 #include <iostream>
 #include <stdexcept>
+#include <cmath>
+#include <limits>
 
 using namespace std;
 
@@ -24,8 +26,28 @@ namespace mpask
     else if (alias.dataType.name.isOctetString) {
       return encodeOctetString(input);
     }
-    cerr << "TODO: encode complex types" << endl;
+    throw runtime_error {"Complex type encoding not implemented."};
     return {};
+  }
+
+  unsigned char
+  Kober::calculateTag() const
+  {
+    return static_cast<unsigned char>(alias.typeIdentifier);
+  }
+
+  unsigned char
+  Kober::calculateConstructedBit() const
+  {
+    // EXPLICIT = CONSTRUCTED
+    if (alias.isExplicit) {
+     return 0x20;
+    }
+    if (alias.isImplicit) {
+      return 0x00;
+    }
+    // NO KEYWORD MEANS IMPLICIT
+    return 0x00;
   }
 
   unsigned char
@@ -54,21 +76,34 @@ namespace mpask
     return coded;
   }
 
+  int
+  calculateRequiredNumberOfBits(long long number)
+  {
+    int length = 0;
+    if (number < 0) {
+      number = -number;
+      ++length;
+    }
+    while (number) {
+      number = (number >> 1);
+      ++length;
+    }
+    return length;
+  }
+
   vector<unsigned char>
   Kober::encodeInteger(const string& input) const
   {
-    // TODO: Use dynamic length as a backup option only if the range/size is not provided
     auto tag = static_cast<unsigned char>(0x02);
     vector<unsigned char> coded;
     coded.push_back(calculateVisibilityBytes() | tag);
-    unsigned long inputConverted = stoul(input);
-    auto inputConvertedCopy = inputConverted;
-    unsigned char length = 0; // Can be assumed it will never be > 127; thus a basic length encoding will be used
-    while (inputConvertedCopy) {
-      inputConvertedCopy = (inputConvertedCopy >> 8);
-      ++length;
-    }
+    long long inputConverted = stoul(input);
+    // FOR NOW I DO NOT CARE ABOUT RANGES
+    unsigned char bitLength = calculateRequiredNumberOfBits(inputConverted);
+    while (bitLength % 8) ++bitLength;
+    unsigned char length = bitLength / 8; // Can be assumed it will never be > 127; thus a basic length encoding will be used
     coded.push_back(length);
+
     auto insertionPoint = coded.end();
     for (int i = 0; i < length; ++i) {
       auto maskByteShift = 8 * i;

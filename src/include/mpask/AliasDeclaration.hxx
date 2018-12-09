@@ -20,7 +20,7 @@ struct AliasDeclaration
   bool isExplicit {false};
   bool isImplicit {false};
   std::string visibility;
-  int typeIdentifier {-1};
+  int typeIdentifier {0}; // Let's say zero is a default
   DataType dataType;
 };
 

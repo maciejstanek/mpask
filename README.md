@@ -138,3 +138,47 @@ Conclusions
    - `iso(1)` has child `org(3)`
    - `org(3)` has child `dod(6)`
    - `dod(6)` has child `internet(1)`
+
+BER
+---
+
+Schema:
+```
+Xxx DEFINITIONS AUTOMATIC TAGS ::= 
+BEGIN
+	Aaa ::= [1] IMPLICIT INTEGER
+	Bbb ::= [1] EXPLICIT INTEGER
+	Yyy ::= SEQUENCE
+	{
+		zzz Aaa
+		-- zzz Bbb
+	}
+END
+```
+
+Data:
+```
+value Yyy ::= {
+  zzz 255
+}
+```
+
+implicit (Aaa):
+```
+	universal contructed sequence         30
+	length 4                              04
+		universal primitive zero?           80
+		length 2                            02
+      value 255                         00 FF
+```
+
+explicit (Bbb):
+```
+	universal contructed sequence         30
+	length 6                              06
+		context-specific contructed zero?   A0
+		length 4                            04
+			universal primitive integer   		02
+			length 2                      		02
+			value                         		00 FF
+```

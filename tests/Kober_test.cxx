@@ -76,6 +76,16 @@ TEST_F(Kober_test, integer_zero)
   ASSERT_EQ(coded, golden);
 }
 
+TEST_F(Kober_test, integer_range)
+{
+  string input {"abc ::= [PRIVATE 1] INTEGER (0..100000)"};
+  auto [status, result] = parse(input);
+  ASSERT_EQ(status, true);
+  auto coded = Kober(result)("63");
+  vector<unsigned char> golden {0xc2, 0x01, 0x3f};
+  ASSERT_EQ(coded, golden);
+}
+
 TEST_F(Kober_test, null)
 {
   string input {"abc ::= [APPLICATION 2] NULL"};
@@ -84,4 +94,19 @@ TEST_F(Kober_test, null)
   auto coded = Kober(result)("");
   vector<unsigned char> golden {0x45, 0x00};
   ASSERT_EQ(coded, golden);
+}
+
+TEST_F(Kober_test, calculate_required_number_of_bits)
+{
+  ASSERT_EQ(calculateRequiredNumberOfBits(-1), 2);
+  ASSERT_EQ(calculateRequiredNumberOfBits(0), 0);
+  ASSERT_EQ(calculateRequiredNumberOfBits(1), 1);
+  ASSERT_EQ(calculateRequiredNumberOfBits(254), 8);
+  ASSERT_EQ(calculateRequiredNumberOfBits(255), 8);
+  ASSERT_EQ(calculateRequiredNumberOfBits(256), 9);
+  ASSERT_EQ(calculateRequiredNumberOfBits(257), 9);
+  ASSERT_EQ(calculateRequiredNumberOfBits(-254), 9);
+  ASSERT_EQ(calculateRequiredNumberOfBits(-255), 9);
+  ASSERT_EQ(calculateRequiredNumberOfBits(-256), 10);
+  ASSERT_EQ(calculateRequiredNumberOfBits(-257), 10);
 }

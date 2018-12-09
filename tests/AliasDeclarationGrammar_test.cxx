@@ -36,7 +36,7 @@ TEST_F(AliasDeclarationGrammar_test, basic)
   EXPECT_EQ(result.isExplicit, false);
   EXPECT_EQ(result.isImplicit, false);
   EXPECT_EQ(result.visibility, ""s);
-  EXPECT_EQ(result.typeIdentifier, -1);
+  EXPECT_EQ(result.typeIdentifier, 0);
   EXPECT_EQ(result.dataType.name.isOctetString, true);
 }
 
