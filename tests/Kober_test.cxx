@@ -1,112 +1,72 @@
 #include "mpask/Kober.hxx"
 
-#include "mpask/AliasDeclarationGrammar.hxx"
+#include "mpask/Parser.hxx"
+#include "mpask/DataValue.hxx"
+#include "mpask/DataSequence.hxx"
 
-#include <boost/spirit/include/qi.hpp>
 #include <gtest/gtest.h>
-#include <string>
-#include <map>
 #include <iostream>
+#include <memory>
 
 using namespace std;
 using namespace mpask;
 
 class Kober_test : public ::testing::Test
 {
-protected:
-  pair<bool, AliasDeclaration> parse(const string& input)
-  {
-    string::const_iterator iter = input.begin();
-    string::const_iterator end = input.end();
-    AliasDeclarationGrammar<string::const_iterator> parser;
-    boost::spirit::ascii::space_type space;
-    AliasDeclaration result;
-    bool status = phrase_parse(iter, end, parser, space, result);
-    return {status, result};
-  }
 };
 
-TEST_F(Kober_test, octet_string)
+TEST_F(Kober_test, single_value)
 {
-  string input {"abc ::= OCTET STRING"};
-  auto [status, result] = parse(input);
-  ASSERT_EQ(status, true);
-  auto coded = Kober(result)("abcd");
-  vector<unsigned char> golden {};
-  ASSERT_EQ(coded, golden);
+  stringstream s {R"(
+    Abc DEFINITIONS ::= BEGIN
+      Abc ::= [APPLICATION 3] IMPLICIT INTEGER
+    END
+  )"};
+  auto schema = Parser{}(s);
+  Kober kober {schema};
+
+  auto data = make_shared<DataValue>();
+  data->setType("INTEGER");
+  data->setValue("15");
+  data->setContextAlias(schema->aliases.at(0));
+  
+  auto code = kober.encode(data);
+  decltype(code) golden = {};
+  EXPECT_EQ(code, golden);
 }
 
-TEST_F(Kober_test, integer)
+TEST_F(Kober_test, simple_sequence)
 {
-  string input {"abc ::= [UNIVERSAL 1] INTEGER"};
-  auto [status, result] = parse(input);
-  ASSERT_EQ(status, true);
-  auto coded = Kober(result)("1234");
-  vector<unsigned char> golden {0x02, 0x02, 0x04, 0xd2 };
-  ASSERT_EQ(coded, golden);
-}
+  stringstream s {R"(
+    Abc DEFINITIONS ::= BEGIN
+      Abc ::= [APPLICATION 1] IMPLICIT INTEGER
+      Def ::= [CONTEXT-SPECIFIC 2] EXPLICIT INTEGER
+      Xyz ::= SEQUENCE
+      {
+        Abcabc Abc,
+        Defdef Def
+      }
+    END
+  )"};
+  auto schema = Parser{}(s);
+  Kober kober {schema};
 
-TEST_F(Kober_test, integer_small)
-{
-  string input {"abc ::= [APPLICATION 1] INTEGER"};
-  auto [status, result] = parse(input);
-  ASSERT_EQ(status, true);
-  auto coded = Kober(result)("7");
-  vector<unsigned char> golden {0x42, 0x01, 0x07};
-  ASSERT_EQ(coded, golden);
-}
+  auto data1 = make_shared<DataValue>();
+  data1->setType("INTEGER");
+  data1->setValue("221");
+  data1->setContextAlias(schema->aliases.at(0)); // Assuming Abc is 0th
 
-TEST_F(Kober_test, integer_big)
-{
-  string input {"abc ::= [CONTEXT-SPECIFIC 1] INTEGER"};
-  auto [status, result] = parse(input);
-  ASSERT_EQ(status, true);
-  auto coded = Kober(result)("4294967295"); // 2^32-1
-  vector<unsigned char> golden {0x82, 0x04, 0xff, 0xff, 0xff, 0xff};
-  ASSERT_EQ(coded, golden);
-}
+  auto data2 = make_shared<DataValue>();
+  data2->setType("INTEGER");
+  data2->setValue("238");
+  data2->setContextAlias(schema->aliases.at(1)); // Assuming Def is 1th
 
-TEST_F(Kober_test, integer_zero)
-{
-  string input {"abc ::= [PRIVATE 1] INTEGER"};
-  auto [status, result] = parse(input);
-  ASSERT_EQ(status, true);
-  auto coded = Kober(result)("0");
-  vector<unsigned char> golden {0xc2, 0x00};
-  ASSERT_EQ(coded, golden);
-}
-
-TEST_F(Kober_test, integer_range)
-{
-  string input {"abc ::= [PRIVATE 1] INTEGER (0..100000)"};
-  auto [status, result] = parse(input);
-  ASSERT_EQ(status, true);
-  auto coded = Kober(result)("63");
-  vector<unsigned char> golden {0xc2, 0x01, 0x3f};
-  ASSERT_EQ(coded, golden);
-}
-
-TEST_F(Kober_test, null)
-{
-  string input {"abc ::= [APPLICATION 2] NULL"};
-  auto [status, result] = parse(input);
-  ASSERT_EQ(status, true);
-  auto coded = Kober(result)("");
-  vector<unsigned char> golden {0x45, 0x00};
-  ASSERT_EQ(coded, golden);
-}
-
-TEST_F(Kober_test, calculate_required_number_of_bits)
-{
-  ASSERT_EQ(calculateRequiredNumberOfBits(-1), 2);
-  ASSERT_EQ(calculateRequiredNumberOfBits(0), 0);
-  ASSERT_EQ(calculateRequiredNumberOfBits(1), 1);
-  ASSERT_EQ(calculateRequiredNumberOfBits(254), 8);
-  ASSERT_EQ(calculateRequiredNumberOfBits(255), 8);
-  ASSERT_EQ(calculateRequiredNumberOfBits(256), 9);
-  ASSERT_EQ(calculateRequiredNumberOfBits(257), 9);
-  ASSERT_EQ(calculateRequiredNumberOfBits(-254), 9);
-  ASSERT_EQ(calculateRequiredNumberOfBits(-255), 9);
-  ASSERT_EQ(calculateRequiredNumberOfBits(-256), 10);
-  ASSERT_EQ(calculateRequiredNumberOfBits(-257), 10);
+  auto sequence = make_shared<DataSequence>();
+  sequence->append(data1);
+  sequence->append(data2);
+  sequence->setContextSequence(schema->sequences.at(0));
+  
+  auto code = kober.encode(sequence);
+  decltype(code) golden = {};
+  EXPECT_EQ(code, golden);
 }

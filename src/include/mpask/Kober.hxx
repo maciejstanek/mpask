@@ -1,26 +1,19 @@
 #pragma once
 
-#include "mpask/AliasDeclaration.hxx"
+#include "mpask/MIBFile.hxx"
+#include "mpask/DataSequenceElement.hxx"
 
 #include <vector>
+#include <memory>
 
 namespace mpask
 {
   class Kober
   {
   public:
-    Kober(const AliasDeclaration&);
-    std::vector<unsigned char> operator()(const std::string&) const;
+    Kober(const std::shared_ptr<MIBFile>&);
+    std::vector<unsigned char> encode(const std::shared_ptr<DataSequenceElement>&) const;
   private:
-    const AliasDeclaration& alias;
-    unsigned char calculateIdentifier() const;
-    unsigned char calculateVisibilityBytes() const;
-    unsigned char calculateTag() const;
-    unsigned char calculateConstructedBit() const;
-    std::vector<unsigned char> encodeNull() const;
-    std::vector<unsigned char> encodeInteger(const std::string&) const;
-    std::vector<unsigned char> encodeOctetString(const std::string&) const;
+    std::shared_ptr<MIBFile> mib;
   };
-
-  int calculateRequiredNumberOfBits(long long);
 }
