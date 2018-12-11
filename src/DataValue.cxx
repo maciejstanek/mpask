@@ -27,4 +27,16 @@ namespace mpask
   {
     value = x;
   }
+
+  void
+  DataValue::setContextAlias(const AliasDeclaration& newContext)
+  {
+    context = newContext;
+  }
+
+  const AliasDeclaration&
+  DataValue::getContextAlias()
+  {
+    return context;
+  }
 }

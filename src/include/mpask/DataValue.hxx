@@ -1,6 +1,7 @@
 #pragma once
 
 #include "mpask/DataSequenceElement.hxx"
+#include "mpask/AliasDeclaration.hxx"
 
 #include <string>
 
@@ -15,6 +16,10 @@ namespace mpask
     const std::string& getType() const override;
     void setType(const std::string&) override;
 
+    void setContextAlias(const AliasDeclaration&);
+    const AliasDeclaration& getContextAlias();
+
+    AliasDeclaration context;
     std::string type;
     std::string value;
   };

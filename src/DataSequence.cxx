@@ -33,4 +33,16 @@ namespace mpask
   {
     type = x;
   }
+
+  void
+  DataSequence::setContextSequence(const SequenceDeclaration& newContext)
+  {
+    context = newContext;
+  }
+
+  const SequenceDeclaration&
+  DataSequence::getContextSequence()
+  {
+    return context;
+  }
 }

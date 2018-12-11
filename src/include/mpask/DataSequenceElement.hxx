@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include "mpask/AliasDeclaration.hxx"
 
 namespace mpask
 {

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "mpask/DataSequenceElement.hxx"
+#include "mpask/SequenceDeclaration.hxx"
 
 #include <memory>
 #include <vector>
@@ -17,7 +18,10 @@ namespace mpask
     Iterator end();
     const std::string& getType() const override;
     void setType(const std::string&) override;
+    void setContextSequence(const SequenceDeclaration&);
+    const SequenceDeclaration& getContextSequence();
 
+    SequenceDeclaration context;
     std::string type;
     std::vector<std::shared_ptr<DataSequenceElement>> sequence;
   };

@@ -2,6 +2,7 @@
 
 #include "mpask/DataSequence.hxx"
 #include "mpask/DataValue.hxx"
+#include "mpask/Kober.hxx"
 
 #include <iostream>
 
@@ -17,7 +18,6 @@ namespace mpask
   vector<unsigned char>
   KoberWrapper::encode(const shared_ptr<DataSequenceElement>& element) const
   {
-    cerr << "TODO: Implement kober wrapper." << endl;
     vector<unsigned char> code;
     if (auto sequence = dynamic_pointer_cast<DataSequence>(element)) {
       code.push_back(0xaa);
@@ -28,7 +28,8 @@ namespace mpask
       }
     }
     else if (auto value = dynamic_pointer_cast<DataValue>(element)) {
-      code.push_back(0xbb);
+      auto subcode = Kober{value->getContextAlias()}(value->getValue());
+      code.insert(code.end(), subcode.begin(), subcode.end());
     }
     return code;
   }
