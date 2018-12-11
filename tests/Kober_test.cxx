@@ -70,3 +70,55 @@ TEST_F(Kober_test, simple_sequence)
   decltype(code) golden = {};
   EXPECT_EQ(code, golden);
 }
+
+TEST_F(Kober_test, nested_sequence)
+{
+  stringstream s {R"(
+    Abc DEFINITIONS ::= BEGIN
+      Abc ::= [APPLICATION 1] IMPLICIT INTEGER
+      Def ::= [CONTEXT-SPECIFIC 2] EXPLICIT INTEGER
+      Ghi ::= [UNIVERSAL 3] EXPLICIT INTEGER
+      Uvw ::= SEQUENCE
+      {
+        Abcabc Abc,
+        Defdef Def
+      }
+      Xyz ::= SEQUENCE
+      {
+        Ghighi Ghi,
+        Xyzxyz Xyz
+      }
+    END
+  )"};
+  auto schema = Parser{}(s);
+  Kober kober {schema};
+
+  auto data1 = make_shared<DataValue>();
+  data1->setType("INTEGER");
+  data1->setValue("204");
+  data1->setContextAlias(schema->aliases.at(0)); // Assuming Abc is 0th
+
+  auto data2 = make_shared<DataValue>();
+  data2->setType("INTEGER");
+  data2->setValue("221");
+  data2->setContextAlias(schema->aliases.at(1)); // Assuming Def is 1st
+
+  auto data3 = make_shared<DataValue>();
+  data3->setType("INTEGER");
+  data3->setValue("238");
+  data3->setContextAlias(schema->aliases.at(2)); // Assuming Ghi is 2nd
+
+  auto sequence1 = make_shared<DataSequence>();
+  sequence1->append(data1);
+  sequence1->append(data2);
+  sequence1->setContextSequence(schema->sequences.at(0)); // Assuming Uvw is 0th
+
+  auto sequence2 = make_shared<DataSequence>();
+  sequence2->append(data3);
+  sequence2->append(sequence1);
+  sequence2->setContextSequence(schema->sequences.at(1)); // Assuming Xyz is 1st
+  
+  auto code = kober.encode(sequence2);
+  decltype(code) golden = {};
+  EXPECT_EQ(code, golden);
+}
