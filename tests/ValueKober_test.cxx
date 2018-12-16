@@ -37,7 +37,7 @@ TEST_F(ValueKober_test, octet_string)
   data->setContextAlias(result);
   data->setValue("abcd");
   auto coded = ValueKober()(data);
-  vector<unsigned char> golden {};
+  vector<unsigned char> golden {0x84, 0x04, 0x61, 0x62, 0x63, 0x64};
   ASSERT_EQ(coded, golden);
 }
 

@@ -31,7 +31,7 @@ TEST_F(Kober_test, single_value)
   data->setContextAlias(schema->aliases.at(0));
   
   auto code = kober.encode(data);
-  decltype(code) golden = {};
+  decltype(code) golden = {0x42, 0x01, 0x0f};
   EXPECT_EQ(code, golden);
 }
 
@@ -67,7 +67,7 @@ TEST_F(Kober_test, simple_sequence)
   sequence->setContextSequence(schema->sequences.at(0));
   
   auto code = kober.encode(sequence);
-  decltype(code) golden = {};
+  decltype(code) golden = {0x30, 0x06, 0x42, 0x01, 0xdd, 0x82, 0x01, 0xee};
   EXPECT_EQ(code, golden);
 }
 
@@ -86,7 +86,7 @@ TEST_F(Kober_test, nested_sequence)
       Xyz ::= SEQUENCE
       {
         Ghighi Ghi,
-        Xyzxyz Xyz
+        Uvwuvw Uvw
       }
     END
   )"};
@@ -119,6 +119,6 @@ TEST_F(Kober_test, nested_sequence)
   sequence2->setContextSequence(schema->sequences.at(1)); // Assuming Xyz is 1st
   
   auto code = kober.encode(sequence2);
-  decltype(code) golden = {};
+  decltype(code) golden = {0x30, 0x0b, 0x02, 0x01, 0xee, 0x30, 0x06, 0x42, 0x01, 0xcc, 0x82, 0x01, 0xdd};
   EXPECT_EQ(code, golden);
 }

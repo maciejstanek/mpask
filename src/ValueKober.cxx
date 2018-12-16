@@ -119,7 +119,10 @@ namespace mpask
     auto tag = static_cast<unsigned char>(0x04);
     vector<unsigned char> coded;
     coded.push_back(calculateVisibilityBytes(value) | tag);
-    throw runtime_error {"Encoding octet strings not implemented."};
+    coded.push_back(value->getValue().size()); // TODO: encode size > 127
+    for (const auto& x : value->getValue()) {
+      coded.push_back(static_cast<unsigned char>(x));
+    }
     return coded;
   }
 }
