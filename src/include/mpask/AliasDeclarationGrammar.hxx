@@ -40,7 +40,7 @@ namespace mpask
         >> lit("::=")
         >> -(
           lit('[')
-          >> visibility
+          >> -visibility
           >> int_ [boost::phoenix::ref(aliasDeclarationInst.typeIdentifier) = _1]
           >> lit(']')
           )

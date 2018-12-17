@@ -18,17 +18,43 @@ namespace mpask
   vector<unsigned char>
   ValueKober::operator()(const shared_ptr<DataValue>& value) const
   {
+    vector<unsigned char> code;
     if (value->context.dataType.name.isNull) {
-      return encodeNull(value);
+      code = encodeNull(value);
     }
     else if (value->context.dataType.name.isInteger) {
-      return encodeInteger(value);
+      code = encodeInteger(value);
     }
     else if (value->context.dataType.name.isOctetString) {
-      return encodeOctetString(value);
+      code = encodeOctetString(value);
     }
-    throw runtime_error {"Encoding '"s + value->context.dataType.name.name + "' not implemented."s};
-    return {};
+    else {
+      throw runtime_error {"Encoding '"s + value->context.dataType.name.name + "' not implemented."s};
+    }
+    annotateCode(code, value);
+    return code;
+  }
+
+  void
+  ValueKober::annotateCode(vector<unsigned char>& code, const shared_ptr<DataValue>& value) const
+  {
+    if (value->context.isExplicit) {
+      // Wrap it up (65 03 02 01 05).
+      // 1. Force UNIVERSAL PRIMITIVE.
+      code.at(0) &= 0x1f;
+      // 2. Calculate and insert length.
+      auto length = LengthKober()(code.size());
+      code.insert(code.begin(), length.begin(), length.end());
+      // 3. Prepend new identifier.
+      unsigned char identifier = calculateVisibilityBytes(value) | 0x20 | value->context.typeIdentifier;
+      code.insert(code.begin(), identifier);
+    }
+    else if (value->context.isImplicit) {
+      // Use provided tag (44 01 05).
+      unsigned char identifier = calculateVisibilityBytes(value) | value->context.typeIdentifier;
+      code.at(0) = identifier;
+    }
+    // Do not do anything in case of a primitive (02 01 05).
   }
 
   unsigned char

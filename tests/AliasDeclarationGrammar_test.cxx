@@ -101,6 +101,16 @@ TEST_F(AliasDeclarationGrammar_test, long_2)
   EXPECT_EQ(result.dataType.restriction.left, 4);
 }
 
+TEST_F(AliasDeclarationGrammar_test, no_class)
+{
+  string input {R"(
+    Xxx ::= [1] INTEGER
+  )"};
+  auto [status, result] = parse(input);
+  EXPECT_EQ(status, true);
+  EXPECT_EQ(result.visibility, ""s);
+}
+
 TEST_F(AliasDeclarationGrammar_test, rfc1155)
 {
   string input {R"(

@@ -125,6 +125,32 @@ TEST_F(ValueKober_test, integer_zero)
   ASSERT_EQ(coded, golden);
 }
 
+TEST_F(ValueKober_test, integer_implicit)
+{
+  string input {"abc ::= [1] IMPLICIT INTEGER"};
+  auto [status, result] = parse(input);
+  ASSERT_EQ(status, true);
+  auto data = make_shared<DataValue>();
+  data->setContextAlias(result);
+  data->setValue("5");
+  auto coded = ValueKober()(data);
+  vector<unsigned char> golden {0x81, 0x01, 0x05};
+  ASSERT_EQ(coded, golden);
+}
+
+TEST_F(ValueKober_test, integer_explicit)
+{
+  string input {"abc ::= [1] EXPLICIT INTEGER"};
+  auto [status, result] = parse(input);
+  ASSERT_EQ(status, true);
+  auto data = make_shared<DataValue>();
+  data->setContextAlias(result);
+  data->setValue("5");
+  auto coded = ValueKober()(data);
+  vector<unsigned char> golden {0xa1, 0x03, 0x02, 0x01, 0x05};
+  ASSERT_EQ(coded, golden);
+}
+
 TEST_F(ValueKober_test, integer_range)
 {
   string input {"abc ::= [PRIVATE 1] INTEGER (0..100000)"};
