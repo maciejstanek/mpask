@@ -183,6 +183,63 @@ explicit (Bbb):
       value                             00 FF
 ```
 
+Schema:
+```
+Xxx DEFINITIONS AUTOMATIC TAGS ::=
+BEGIN
+  Aaa ::= [APPLICATION 1] INTEGER
+  Bbb ::= [APPLICATION 2] IMPLICIT INTEGER
+  Ccc ::= [APPLICATION 3] EXPLICIT INTEGER
+  Ddd ::= SEQUENCE
+  {
+    aaa Aaa,
+    bbb Bbb,
+    ccc Ccc
+  }
+END
+```
+
+Data:
+```
+value Ddd ::= {
+  aaa 5,
+  bbb 5,
+  ccc 5
+}
+```
+
+BER:
+```
+Encoding to the file 'data.ber' using BER encoding rule...
+Ddd SEQUENCE: tag = [UNIVERSAL 16] constructed; length = 11
+  aaa Aaa INTEGER: tag = [0] primitive; length = 1
+    5
+  bbb Bbb INTEGER: tag = [1] primitive; length = 1
+    5
+  ccc : tag = [2] constructed; length = 3
+    Ccc INTEGER: tag = [UNIVERSAL 2] primitive; length = 1
+      5
+Encoded successfully in 13 bytes:
+300B8001 05810105 A2030201 05
+```
+
+Analysis:
+```
+> 30                  sequence
+  > 0B                length 11
+    > 80              context-specific primitive (tag zero)
+      > 01            length 1
+        > 05          value 5
+    > 81              context-specific primitive (tag one)
+      > 01            length 1
+        > 05          value 5
+    > A2              context-specific constructed (tag two)
+      > 03            length 3
+        > 02          universal primitive integer
+          > 01        length 1
+            > 05      value 5
+```
+
 WHAT I DID - A REPORT
 =====================
 
