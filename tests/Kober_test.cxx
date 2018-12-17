@@ -19,7 +19,7 @@ TEST_F(Kober_test, single_value)
 {
   stringstream s {R"(
     Abc DEFINITIONS ::= BEGIN
-      Abc ::= [APPLICATION 3] IMPLICIT INTEGER
+      Abc ::= [APPLICATION 3] INTEGER
     END
   )"};
   auto schema = Parser{}(s);
@@ -39,8 +39,8 @@ TEST_F(Kober_test, simple_sequence)
 {
   stringstream s {R"(
     Abc DEFINITIONS ::= BEGIN
-      Abc ::= [APPLICATION 1] IMPLICIT INTEGER
-      Def ::= [CONTEXT-SPECIFIC 2] EXPLICIT INTEGER
+      Abc ::= [APPLICATION 1] INTEGER
+      Def ::= [CONTEXT-SPECIFIC 2] INTEGER
       Xyz ::= SEQUENCE
       {
         Abcabc Abc,
@@ -119,7 +119,8 @@ TEST_F(Kober_test, nested_sequence)
   sequence2->setContextSequence(schema->sequences.at(1)); // Assuming Xyz is 1st
   
   auto code = kober.encode(sequence2);
-  decltype(code) golden = {0x30, 0x0b, 0x02, 0x01, 0xee, 0x30, 0x06, 0x42, 0x01, 0xcc, 0x82, 0x01, 0xdd};
+  decltype(code) golden = {0x30, 0x0f, 0x23, 0x03, 0x02, 0x01, 0xee, 0x30,
+    0x08, 0x41, 0x01, 0xcc, 0xa2, 0x03, 0x02, 0x01, 0xdd};
   EXPECT_EQ(code, golden);
 }
 
@@ -127,7 +128,7 @@ TEST_F(Kober_test, long_sequence)
 {
   stringstream s {R"(
     Abc DEFINITIONS ::= BEGIN
-      Def ::= [APPLICATION 1] IMPLICIT INTEGER
+      Def ::= [APPLICATION 1] INTEGER
       Ghi ::= SEQUENCE
       {
         Def00 Def,
