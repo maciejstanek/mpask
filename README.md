@@ -182,3 +182,10 @@ explicit (Bbb):
       length 2                          02
       value                             00 FF
 ```
+
+WHAT I DID - A REPORT
+=====================
+
+ * encoding octet string
+ * encoding long sequences and strings (2^1008)
+
