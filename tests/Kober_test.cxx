@@ -122,3 +122,72 @@ TEST_F(Kober_test, nested_sequence)
   decltype(code) golden = {0x30, 0x0b, 0x02, 0x01, 0xee, 0x30, 0x06, 0x42, 0x01, 0xcc, 0x82, 0x01, 0xdd};
   EXPECT_EQ(code, golden);
 }
+
+TEST_F(Kober_test, long_sequence)
+{
+  stringstream s {R"(
+    Abc DEFINITIONS ::= BEGIN
+      Def ::= [APPLICATION 1] IMPLICIT INTEGER
+      Ghi ::= SEQUENCE
+      {
+        Def00 Def,
+        Def01 Def,
+        Def02 Def,
+        Def03 Def,
+        Def04 Def,
+        Def05 Def,
+        Def06 Def,
+        Def07 Def,
+        Def010 Def,
+        Def011 Def,
+        Def012 Def,
+        Def013 Def,
+        Def014 Def,
+        Def015 Def,
+        Def016 Def,
+        Def017 Def,
+        Def020 Def,
+        Def021 Def,
+        Def022 Def,
+        Def023 Def,
+        Def024 Def,
+        Def025 Def,
+        Def026 Def,
+        Def027 Def,
+        Def030 Def,
+        Def031 Def,
+        Def032 Def,
+        Def033 Def,
+        Def034 Def,
+        Def035 Def,
+        Def036 Def,
+        Def037 Def,
+        Def040 Def,
+        Def041 Def,
+        Def042 Def
+      }
+    END
+  )"};
+  auto schema = Parser{}(s);
+  Kober kober {schema};
+
+  auto data = make_shared<DataValue>();
+  data->setType("INTEGER");
+  data->setValue("255");
+  data->setContextAlias(schema->aliases.at(0)); // Assuming is 0th
+
+  auto sequence = make_shared<DataSequence>();
+  for (int i = 0; i < 43; ++i) {
+    sequence->append(data);
+  }
+  sequence->setContextSequence(schema->sequences.at(0)); // Assuming Uvw is 0th
+
+  auto code = kober.encode(sequence);
+  decltype(code) golden = {0x30, 0x81, 0x81};
+  for (int i = 0; i < 43; ++i) {
+    golden.push_back(0x42);
+    golden.push_back(0x01);
+    golden.push_back(0xff);
+  }
+  EXPECT_EQ(code, golden);
+}

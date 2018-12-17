@@ -41,6 +41,38 @@ TEST_F(ValueKober_test, octet_string)
   ASSERT_EQ(coded, golden);
 }
 
+TEST_F(ValueKober_test, long_octet_string)
+{
+  string input {"abc ::= OCTET STRING"};
+  auto [status, result] = parse(input);
+  ASSERT_EQ(status, true);
+  auto data = make_shared<DataValue>();
+  data->setContextAlias(result);
+  data->setValue(
+    "AAAAAAAAAAAAAAAAAAAA" // 20
+    "AAAAAAAAAAAAAAAAAAAA" // 40
+    "AAAAAAAAAAAAAAAAAAAA" // 60
+    "AAAAAAAAAAAAAAAAAAAA" // 80
+    "AAAAAAAAAAAAAAAAAAAA" // 100
+    "AAAAAAAAAAAAAAAAAAAA" // 120
+    "AAAAAAAAAAAAAAAAAAAA" // 140
+    "AAAAAAAAAAAAAAAAAAAA" // 160
+    "AAAAAAAAAAAAAAAAAAAA" // 180
+    "AAAAAAAAAAAAAAAAAAAA" // 200
+    "AAAAAAAAAAAAAAAAAAAA" // 220
+    "AAAAAAAAAAAAAAAAAAAA" // 240
+    "AAAAAAAAAAAAAAAAAAAA" // 260
+    "AAAAAAAAAAAAAAAAAAAA" // 280
+    "AAAAAAAAAAAAAAAAAAAA" // 300
+  );
+  auto coded = ValueKober()(data);
+  vector<unsigned char> golden {0x84, 0x82, 0x01, 0x2c};
+  for (unsigned int i = 0; i < data->getValue().size(); ++i) {
+    golden.push_back(0x41);
+  }
+  ASSERT_EQ(coded, golden);
+}
+
 TEST_F(ValueKober_test, integer)
 {
   string input {"abc ::= [UNIVERSAL 1] INTEGER"};

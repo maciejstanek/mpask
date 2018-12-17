@@ -1,5 +1,7 @@
 #include "mpask/ValueKober.hxx"
 
+#include "mpask/LengthKober.hxx"
+
 #include <iostream>
 #include <stdexcept>
 #include <cmath>
@@ -119,7 +121,10 @@ namespace mpask
     auto tag = static_cast<unsigned char>(0x04);
     vector<unsigned char> coded;
     coded.push_back(calculateVisibilityBytes(value) | tag);
-    coded.push_back(value->getValue().size()); // TODO: encode size > 127
+    // Only here we can get length > 127.
+    // TODO It would be better to use length coder consistently but this is an uni project so who cares.
+    auto length = LengthKober()(value->getValue().size());
+    coded.insert(coded.end(), length.begin(), length.end());
     for (const auto& x : value->getValue()) {
       coded.push_back(static_cast<unsigned char>(x));
     }

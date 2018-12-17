@@ -3,6 +3,7 @@
 #include "mpask/DataSequence.hxx"
 #include "mpask/DataValue.hxx"
 #include "mpask/ValueKober.hxx"
+#include "mpask/LengthKober.hxx"
 
 #include <iostream>
 
@@ -27,7 +28,8 @@ namespace mpask
         auto subcode = encode(subelement);
         sequenceCode.insert(sequenceCode.end(), subcode.begin(), subcode.end());
       }
-      code.push_back(static_cast<unsigned char>(sequenceCode.size())); // TODO: implement length > 127
+      auto codeLength = LengthKober()(sequenceCode.size());
+      code.insert(code.end(), codeLength.begin(), codeLength.end());
       code.insert(code.end(), sequenceCode.begin(), sequenceCode.end());
     }
     else if (auto value = dynamic_pointer_cast<DataValue>(element)) {
