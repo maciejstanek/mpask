@@ -138,6 +138,19 @@ TEST_F(ValueKober_test, integer_implicit)
   ASSERT_EQ(coded, golden);
 }
 
+TEST_F(ValueKober_test, integer_implicit_big_tag)
+{
+  string input {"abc ::= [1234] IMPLICIT INTEGER"};
+  auto [status, result] = parse(input);
+  ASSERT_EQ(status, true);
+  auto data = make_shared<DataValue>();
+  data->setContextAlias(result);
+  data->setValue("5");
+  auto coded = ValueKober()(data);
+  vector<unsigned char> golden {0x9f, 0x89, 0x52, 0x01, 0x05};
+  ASSERT_EQ(coded, golden);
+}
+
 TEST_F(ValueKober_test, integer_explicit)
 {
   string input {"abc ::= [1] EXPLICIT INTEGER"};
@@ -148,6 +161,19 @@ TEST_F(ValueKober_test, integer_explicit)
   data->setValue("5");
   auto coded = ValueKober()(data);
   vector<unsigned char> golden {0xa1, 0x03, 0x02, 0x01, 0x05};
+  ASSERT_EQ(coded, golden);
+}
+
+TEST_F(ValueKober_test, integer_explicit_big_tag)
+{
+  string input {"abc ::= [1234] EXPLICIT INTEGER"};
+  auto [status, result] = parse(input);
+  ASSERT_EQ(status, true);
+  auto data = make_shared<DataValue>();
+  data->setContextAlias(result);
+  data->setValue("5");
+  auto coded = ValueKober()(data);
+  vector<unsigned char> golden {0xbf, 0x89, 0x52, 0x03, 0x02, 0x01, 0x05};
   ASSERT_EQ(coded, golden);
 }
 

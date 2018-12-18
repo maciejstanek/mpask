@@ -1,6 +1,7 @@
 #include "mpask/ValueKober.hxx"
 
 #include "mpask/LengthKober.hxx"
+#include "mpask/TagKober.hxx"
 
 #include <iostream>
 #include <stdexcept>
@@ -46,22 +47,22 @@ namespace mpask
       auto length = LengthKober()(code.size());
       code.insert(code.begin(), length.begin(), length.end());
       // 3. Prepend new identifier.
-      unsigned char identifier = calculateVisibilityBytes(value) | 0x20 | value->context.typeIdentifier;
-      code.insert(code.begin(), identifier);
+      auto identifier = TagKober()(value->context.typeIdentifier);
+      identifier.at(0) |= calculateVisibilityBytes(value) | 0x20;
+      identifier.insert(identifier.end(), code.begin(), code.end());
+      code = identifier;
     }
     else if (value->context.isImplicit) {
       // Use provided tag (44 01 05).
-      unsigned char identifier = calculateVisibilityBytes(value) | value->context.typeIdentifier;
-      code.at(0) = identifier;
+      auto identifier = TagKober()(value->context.typeIdentifier);
+      identifier.at(0) |= calculateVisibilityBytes(value);
+      identifier.insert(identifier.end(), code.begin() + 1, code.end()); // discard old tag
+      code = identifier;
     }
     // Do not do anything in case of a primitive (02 01 05).
   }
 
-  unsigned char
-  ValueKober::calculateTag(const shared_ptr<DataValue>& value) const
-  {
-    return static_cast<unsigned char>(value->context.typeIdentifier);
-  }
+  //return static_cast<unsigned char>(value->context.typeIdentifier);
 
   unsigned char
   ValueKober::calculateConstructedBit(const shared_ptr<DataValue>& value) const
