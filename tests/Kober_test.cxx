@@ -11,6 +11,8 @@
 using namespace std;
 using namespace mpask;
 
+// TODO: Add a test with long tags
+
 class Kober_test : public ::testing::Test
 {
 };

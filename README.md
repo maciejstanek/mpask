@@ -246,4 +246,5 @@ WHAT I DID - A REPORT
  * encoding octet string
  * encoding long sequences and strings (_2^1008_)
  * handling `EXPLICIT` and `IMPLICIT`
+ * encoding long tags
 
