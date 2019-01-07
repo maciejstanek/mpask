@@ -27,10 +27,7 @@ TEST_F(Address_test, ostream_1)
 
 TEST_F(Address_test, ostream_multi)
 {
-  Address a;
-  a.label = "abc";
-  a.intermediateNodes = {{"def", 123}, {"ghi", 456}};
-  a.value = 789;
+  Address a {"abc", {{"def", 123}, {"ghi", 456}}, 789};
   stringstream s;
   s << a;
   EXPECT_EQ(s.str(), "["

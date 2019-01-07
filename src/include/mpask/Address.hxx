@@ -15,7 +15,7 @@ struct Address
 {
   std::string label;
   vector_pair_string_int intermediateNodes;
-  int value;
+  int value {};
 };
 
 std::ostream& operator<<(std::ostream&, const Address&);
