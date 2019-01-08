@@ -38,3 +38,30 @@ TEST_F(Dekober_test, long_length)
   }
   auto result = Dekober(code)();
 }
+
+TEST_F(Dekober_test, octet_string)
+{
+  vector<unsigned char> code = {0x84, 0x04, 0x61, 0x62, 0x63, 0x64};
+  auto result = Dekober(code)();
+}
+
+TEST_F(Dekober_test, sequence)
+{
+  vector<unsigned char> code = {
+    0x30, 0x06,
+          0x42, 0x01, 0xdd,
+          0x82, 0x01, 0xee};
+  auto result = Dekober(code)();
+}
+
+TEST_F(Dekober_test, sequence_in_sequence)
+{
+  vector<unsigned char> code = {
+    0x30, 0x0f,
+          0x23, 0x03,
+                0x02, 0x01, 0xee,
+          0x30, 0x08,
+                0x41, 0x01, 0xcc,
+                0xa2, 0x03, 0x02, 0x01, 0xdd};
+  auto result = Dekober(code)();
+}

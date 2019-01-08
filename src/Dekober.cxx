@@ -38,23 +38,77 @@ namespace mpask
   Dekober::switchContext(std::vector<unsigned char>::const_iterator& i) const
   {
     auto [objectClass, constructed, tag] = parseIdentifier(i);
-    cerr << "CLASS = (" << objectClass << ")\n";
-    cerr << "CONSTRUCTED = (" << constructed << ")\n";
-    cerr << "TAG = (" << tag << ")\n";
+    cerr << "CLASS = " << objectClass << "\n";
+    cerr << "CONSTRUCTED = " << constructed << "\n";
+    cerr << "TAG = " << dec << tag << "\n";
     auto length = parseLength(i);
-    cerr << "LENGTH = (" << length << ")\n";
+    cerr << "LENGTH = " << length << "\n";
+    switch (tag) {
+      case 0x02:
+        cerr << "TYPE = INTEGER\n";
+        parseInteger(i, length);
+        break;
+      case 0x04:
+        cerr << "TYPE = OCTET STRING\n";
+        parseOctetString(i, length);
+        break;
+      case 0x10:
+        cerr << "TYPE = SEQUENCE\n";
+        parseSequence(i, length);
+        break;
+      default:
+        cerr << "TYPE = UNKNOWN " << tag << "\n";
+        parseUnknown(i, length);
+    }
   }
 
   void
-  Dekober::parseSequence(std::vector<unsigned char>::const_iterator& i) const
+  Dekober::parseSequence(std::vector<unsigned char>::const_iterator& i, int length) const
   {
-    // TODO
+    auto start = i;
+    while (i < start + length) {
+      switchContext(i);
+    }
+    if (start + length != i) {
+      throw Exception {"Specified length '"s + to_string(length) + "' is not matching the sequence end."s};
+    }
   }
 
   void
-  Dekober::parseInteger(std::vector<unsigned char>::const_iterator& i) const
+  Dekober::parseInteger(std::vector<unsigned char>::const_iterator& i, int length) const
   {
-    // TODO
+    unsigned long long number = 0;
+    while (length--) {
+      throwOnOutOfBounds(i);
+      number = (number << 8) | *i++;
+    }
+    cerr << "VALUE = " << dec << number << "\n";
+  }
+
+  void
+  Dekober::parseOctetString(std::vector<unsigned char>::const_iterator& i, int length) const
+  {
+    stringstream s;
+    while (length--) {
+      throwOnOutOfBounds(i);
+      s << *i++;
+    }
+    cerr << "VALUE = " << s.str() << "\n";
+  }
+
+  void
+  Dekober::parseUnknown(std::vector<unsigned char>::const_iterator& i, int length) const
+  {
+    vector<unsigned char> v;
+    while (length--) {
+      throwOnOutOfBounds(i);
+      v.push_back(*i++);
+    }
+    cerr << "VALUE =";
+    for(auto vi : v) {
+      cerr << " 0x" << hex << setw(2) << setfill('0') << static_cast<int>(vi);
+    }
+    cerr << "\n";
   }
 
   unsigned long long
