@@ -39,4 +39,10 @@ namespace mpask
   {
     return context;
   }
+
+  ostream&
+  DataValue::print(ostream& s) const
+  {
+    return s << getType() << " (" << getValue() << ")";
+  }
 }

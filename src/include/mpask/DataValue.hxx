@@ -16,6 +16,8 @@ namespace mpask
     const std::string& getType() const override;
     void setType(const std::string&) override;
 
+    std::ostream& print(std::ostream&) const override;
+
     void setContextAlias(const AliasDeclaration&);
     const AliasDeclaration& getContextAlias();
 

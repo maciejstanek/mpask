@@ -1,6 +1,8 @@
 #include "mpask/Dekober.hxx"
 
 #include "mpask/Exception.hxx"
+#include "mpask/DataSequence.hxx"
+#include "mpask/DataValue.hxx"
 
 #include <sstream>
 #include <iomanip>
@@ -15,15 +17,14 @@ namespace mpask
   {
   }
 
-  int
+  shared_ptr<DataSequenceElement>
   Dekober::operator()() const
   {
     auto i = code.begin();
     if (i == code.end()) {
-      // TODO: Return empty pointer or sth
-      return 0;
+      return nullptr;
     }
-    switchContext(i);
+    auto result = switchContext(i);
     if (i != code.end()) {
       stringstream s;
       s << "Byte vector ended unexpectedly at element #"
@@ -31,50 +32,55 @@ namespace mpask
         << hex << static_cast<int>(*i) << ")."s;
       throw Exception {s.str()};
     }
-    return 0; // TODO: Temporallily. Will return object tree.
+    return result;
   }
 
-  void
+  shared_ptr<DataSequenceElement>
   Dekober::switchContext(std::vector<unsigned char>::const_iterator& i) const
   {
     auto [objectClass, constructed, tag] = parseIdentifier(i);
-    cerr << "CLASS = " << objectClass << "\n";
-    cerr << "CONSTRUCTED = " << constructed << "\n";
-    cerr << "TAG = " << dec << tag << "\n";
+    // cerr << "CLASS = " << objectClass << "\n";
+    // cerr << "CONSTRUCTED = " << constructed << "\n";
+    // cerr << "TAG = " << dec << tag << "\n";
     auto length = parseLength(i);
-    cerr << "LENGTH = " << length << "\n";
+    // cerr << "LENGTH = " << length << "\n";
+    shared_ptr<DataSequenceElement> result;
     switch (tag) {
       case 0x02:
-        cerr << "TYPE = INTEGER\n";
-        parseInteger(i, length);
+        // cerr << "TYPE = INTEGER\n";
+        result = parseInteger(i, length);
         break;
       case 0x04:
-        cerr << "TYPE = OCTET STRING\n";
-        parseOctetString(i, length);
+        // cerr << "TYPE = OCTET STRING\n";
+        result = parseOctetString(i, length);
         break;
       case 0x10:
-        cerr << "TYPE = SEQUENCE\n";
-        parseSequence(i, length);
+        // cerr << "TYPE = SEQUENCE\n";
+        result = parseSequence(i, length);
         break;
       default:
-        cerr << "TYPE = UNKNOWN " << tag << "\n";
-        parseUnknown(i, length);
+        // cerr << "TYPE = UNKNOWN " << tag << "\n";
+        result = parseUnknown(i, length);
     }
+    return result;
   }
 
-  void
+  shared_ptr<DataSequenceElement>
   Dekober::parseSequence(std::vector<unsigned char>::const_iterator& i, int length) const
   {
     auto start = i;
+    auto sequence = make_shared<DataSequence>();
     while (i < start + length) {
-      switchContext(i);
+      auto element = switchContext(i);
+      sequence->append(element);
     }
     if (start + length != i) {
       throw Exception {"Specified length '"s + to_string(length) + "' is not matching the sequence end."s};
     }
+    return sequence;
   }
 
-  void
+  shared_ptr<DataSequenceElement>
   Dekober::parseInteger(std::vector<unsigned char>::const_iterator& i, int length) const
   {
     unsigned long long number = 0;
@@ -82,10 +88,14 @@ namespace mpask
       throwOnOutOfBounds(i);
       number = (number << 8) | *i++;
     }
-    cerr << "VALUE = " << dec << number << "\n";
+    // cerr << "VALUE = " << dec << number << "\n";
+    auto value = make_shared<DataValue>();
+    value->setType("INTEGER");
+    value->setValue(to_string(number));
+    return value;
   }
 
-  void
+  shared_ptr<DataSequenceElement>
   Dekober::parseOctetString(std::vector<unsigned char>::const_iterator& i, int length) const
   {
     stringstream s;
@@ -93,10 +103,14 @@ namespace mpask
       throwOnOutOfBounds(i);
       s << *i++;
     }
-    cerr << "VALUE = " << s.str() << "\n";
+    // cerr << "VALUE = " << s.str() << "\n";
+    auto value = make_shared<DataValue>();
+    value->setType("OCTET STRING");
+    value->setValue(s.str());
+    return value;
   }
 
-  void
+  shared_ptr<DataSequenceElement>
   Dekober::parseUnknown(std::vector<unsigned char>::const_iterator& i, int length) const
   {
     vector<unsigned char> v;
@@ -104,11 +118,16 @@ namespace mpask
       throwOnOutOfBounds(i);
       v.push_back(*i++);
     }
-    cerr << "VALUE =";
+    stringstream s;
+    s << "{";
     for(auto vi : v) {
-      cerr << " 0x" << hex << setw(2) << setfill('0') << static_cast<int>(vi);
+      s << " 0x" << hex << setw(2) << setfill('0') << static_cast<int>(vi);
     }
-    cerr << "\n";
+    s << " }";
+    auto value = make_shared<DataValue>();
+    value->setType("UNKNOWN");
+    value->setValue(s.str());
+    return value;
   }
 
   unsigned long long

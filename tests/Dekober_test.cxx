@@ -3,6 +3,7 @@
 #include "mpask/Exception.hxx"
 
 #include <gtest/gtest.h>
+#include <iostream>
 
 using namespace std;
 using namespace mpask;
@@ -14,18 +15,23 @@ class Dekober_test : public ::testing::Test
 TEST_F(Dekober_test, empty)
 {
   auto result = Dekober({})();
+  ASSERT_EQ(result, nullptr);
 }
 
 TEST_F(Dekober_test, integer)
 {
   vector<unsigned char> code = {0x42, 0x01, 0x0f};
   auto result = Dekober(code)();
+  ASSERT_NE(result, nullptr);
+  cerr << "DECODED\n" <<  "-------\n" << *result << "\n";
 }
 
 TEST_F(Dekober_test, long_tag)
 {
   vector<unsigned char> code = {0x5f, 0x87, 0xb9, 0xdd, 0xec, 0x40, 0x01, 0x0f};
   auto result = Dekober(code)();
+  ASSERT_NE(result, nullptr);
+  cerr << "DECODED\n" <<  "-------\n" << *result << "\n";
 }
 
 TEST_F(Dekober_test, long_length)
@@ -37,12 +43,16 @@ TEST_F(Dekober_test, long_length)
     code.push_back(0xff);
   }
   auto result = Dekober(code)();
+  ASSERT_NE(result, nullptr);
+  cerr << "DECODED\n" <<  "-------\n" << *result << "\n";
 }
 
 TEST_F(Dekober_test, octet_string)
 {
   vector<unsigned char> code = {0x84, 0x04, 0x61, 0x62, 0x63, 0x64};
   auto result = Dekober(code)();
+  ASSERT_NE(result, nullptr);
+  cerr << "DECODED\n" <<  "-------\n" << *result << "\n";
 }
 
 TEST_F(Dekober_test, sequence)
@@ -52,6 +62,8 @@ TEST_F(Dekober_test, sequence)
           0x42, 0x01, 0xdd,
           0x82, 0x01, 0xee};
   auto result = Dekober(code)();
+  ASSERT_NE(result, nullptr);
+  cerr << "DECODED\n" <<  "-------\n" << *result << "\n";
 }
 
 TEST_F(Dekober_test, sequence_in_sequence)
@@ -64,4 +76,6 @@ TEST_F(Dekober_test, sequence_in_sequence)
                 0x41, 0x01, 0xcc,
                 0xa2, 0x03, 0x02, 0x01, 0xdd};
   auto result = Dekober(code)();
+  ASSERT_NE(result, nullptr);
+  cerr << "DECODED\n" <<  "-------\n" << *result << "\n";
 }

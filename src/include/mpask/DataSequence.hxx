@@ -20,6 +20,7 @@ namespace mpask
     void setType(const std::string&) override;
     void setContextSequence(const SequenceDeclaration&);
     const SequenceDeclaration& getContextSequence();
+    std::ostream& print(std::ostream&) const override;
 
     SequenceDeclaration context;
     std::string type;
