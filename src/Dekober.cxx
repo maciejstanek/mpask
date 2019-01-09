@@ -55,6 +55,7 @@ namespace mpask
         result = parseOctetString(i, length);
         break;
       case 0x10:
+      case 0x00:
         // cerr << "TYPE = SEQUENCE\n";
         result = parseSequence(i, length);
         break;
