@@ -38,3 +38,45 @@ TEST_F(Address_test, ostream_multi)
     "\n  ]"
   );
 }
+
+TEST_F(Address_test, equality)
+{
+  Address a1 {"aaa", {{"bbb", 111}, {"ccc", 222}}, 333};
+  Address a2 {"aaa", {{"bbb", 111}, {"ccc", 222}}, 333};
+  EXPECT_EQ(a1, a2);
+}
+
+TEST_F(Address_test, non_equal_1)
+{
+  Address a1 {"aaa", {{"bbb", 111}, {"ccc", 222}}, 333};
+  Address a2 {"xxx", {{"bbb", 111}, {"ccc", 222}}, 333};
+  EXPECT_NE(a1, a2);
+}
+
+TEST_F(Address_test, non_equal_2)
+{
+  Address a1 {"aaa", {{"bbb", 111}, {"ccc", 222}}, 333};
+  Address a2 {"aaa", {{"bbb", 111}, {"ccc", 222}}, 999};
+  EXPECT_NE(a1, a2);
+}
+
+TEST_F(Address_test, non_equal_3)
+{
+  Address a1 {"aaa", {{"bbb", 111}, {"ccc", 222}}, 333};
+  Address a2 {"aaa", {{"bbb", 111}}, 333};
+  EXPECT_NE(a1, a2);
+}
+
+TEST_F(Address_test, non_equal_4)
+{
+  Address a1 {"aaa", {{"bbb", 111}, {"ccc", 222}}, 333};
+  Address a2 {"aaa", {{"bbb", 111}, {"xxx", 222}}, 333};
+  EXPECT_NE(a1, a2);
+}
+
+TEST_F(Address_test, non_equal_5)
+{
+  Address a1 {"aaa", {{"bbb", 111}, {"ccc", 222}}, 333};
+  Address a2 {"aaa", {{"bbb", 111}, {"ccc", 999}}, 333};
+  EXPECT_NE(a1, a2);
+}

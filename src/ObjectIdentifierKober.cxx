@@ -40,12 +40,13 @@ namespace mpask
   {
     vector<unsigned char> code;
     while (number) {
-      code.insert(code.begin(), static_cast<unsigned char>(number & 0x7F));
+      code.insert(code.begin(), static_cast<unsigned char>(number | 0x80));
       number >>= 7;
     }
     if (code.size() == 0) {
       code.push_back(0);
     }
+    code.back() &= 0x7f;
     return code;
   }
 }

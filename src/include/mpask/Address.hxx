@@ -19,6 +19,8 @@ struct Address
 };
 
 std::ostream& operator<<(std::ostream&, const Address&);
+bool operator==(const Address&, const Address&);
+bool operator!=(const Address&, const Address&);
 
 }
 
