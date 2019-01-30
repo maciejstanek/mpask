@@ -3,15 +3,13 @@
 #include "mpask/LengthKober.hxx"
 #include "mpask/ObjectIdentifierKober.hxx"
 
+#include <iostream>
+#include <iomanip>
+
 using namespace std;
 
 namespace mpask
 {
-  Message::Message(MessageType _type)
-    : type {_type}
-  {
-  }
-
   vector<unsigned char>
   Message::encode() const
   {
@@ -28,7 +26,7 @@ namespace mpask
     len += communityCode.size();
     
     // SNMP PDU
-    vector<unsigned char> unitCode = {0x04};
+    vector<unsigned char> unitCode = {0xa0};
     int unitLength = 0;
 
     // Request ID
@@ -58,6 +56,13 @@ namespace mpask
       // Object Identifier
       vector<unsigned char> identifierCode = ObjectIdentifierKober()(identifier);
       varbindCodeLen += identifierCode.size();
+#if 0
+      cerr << "DBG: identifierCode ->";
+      for (auto c : identifierCode) {
+        cerr << " 0x" << hex << setfill('0') << setw(2) << static_cast<int>(c);
+      }
+      cerr << "\n";
+#endif
 
       // Value
       vector<unsigned char> valueCode = encodeString(value); // TODO: encode other types too
@@ -87,10 +92,11 @@ namespace mpask
     unitCode.insert(unitCode.end(), errorCode.begin(), errorCode.end());
     unitCode.insert(unitCode.end(), indexCode.begin(), indexCode.end());
     unitCode.insert(unitCode.end(), varbindListCode.begin(), varbindListCode.end());
-    len += unitLengthCode.size();
+    len += unitCode.size();
 
     // SNMP Message
     auto lenCode = LengthKober()(len);
+    code.insert(code.end(), lenCode.begin(), lenCode.end());
     code.insert(code.end(), versionCode.begin(), versionCode.end());
     code.insert(code.end(), communityCode.begin(), communityCode.end());
     code.insert(code.end(), unitCode.begin(), unitCode.end());
@@ -102,14 +108,18 @@ namespace mpask
   Message::encodeString(const string& s) const
   {
     vector<unsigned char> code = {0x04};
-    int len = 1;
-    auto valcode = LengthKober()(s.size());
-    len += valcode.size();
-    code.insert(code.end(), valcode.begin(), valcode.end());
-    len += s.size();
+    auto lencode = LengthKober()(s.size());
+    code.insert(code.end(), lencode.begin(), lencode.end());
     for (auto c : s) {
       code.push_back(c);
     }
+#if 0
+    cerr << "DBG: encodeString(\"" << s << "\") ->";
+    for (auto c : code) {
+      cerr << " 0x" << hex << setfill('0') << setw(2) << static_cast<int>(c);
+    }
+    cerr << "\n";
+#endif
     return code;
   }
 }

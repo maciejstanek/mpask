@@ -16,7 +16,7 @@ TEST_F(ObjectIdentifierKober_test, empty_address)
 {
   Address address;
   auto code = ObjectIdentifierKober()(address);
-  decltype(code) golden = {0x00};
+  decltype(code) golden = {0x06, 0x01, 0x00};
   EXPECT_EQ(code, golden);
 }
 
@@ -24,7 +24,7 @@ TEST_F(ObjectIdentifierKober_test, one_small_value)
 {
   Address address {"", {}, 2};
   auto code = ObjectIdentifierKober()(address);
-  decltype(code) golden = {0x50};
+  decltype(code) golden = {0x06, 0x01, 0x50};
   EXPECT_EQ(code, golden);
 }
 
@@ -38,7 +38,7 @@ TEST_F(ObjectIdentifierKober_test, two_small_values)
 {
   Address address {"", {{"", 2}}, 2};
   auto code = ObjectIdentifierKober()(address);
-  decltype(code) golden = {0x52};
+  decltype(code) golden = {0x06, 0x01, 0x52};
   EXPECT_EQ(code, golden);
 }
 
@@ -52,7 +52,7 @@ TEST_F(ObjectIdentifierKober_test, multiple_values)
 {
   Address address {"", {{"", 1}, {"", 2}, {"", 3}}, 4};
   auto code = ObjectIdentifierKober()(address);
-  decltype(code) golden = {0x2a, 0x03, 0x04};
+  decltype(code) golden = {0x06, 0x03, 0x2a, 0x03, 0x04};
   EXPECT_EQ(code, golden);
 }
 
@@ -60,6 +60,6 @@ TEST_F(ObjectIdentifierKober_test, multiple_values_one_big)
 {
   Address address {"", {{"", 1}, {"", 2}, {"", 3333}}, 4};
   auto code = ObjectIdentifierKober()(address);
-  decltype(code) golden = {0x2a, 0x9a, 0x05, 0x04};
+  decltype(code) golden = {0x06, 0x04, 0x2a, 0x9a, 0x05, 0x04};
   EXPECT_EQ(code, golden);
 }

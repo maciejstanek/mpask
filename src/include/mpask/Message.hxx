@@ -21,7 +21,6 @@ enum class MessageType {
 
 struct Message
 {
-  explicit Message(MessageType);
   std::vector<unsigned char> encode() const;
 
   int version {1};

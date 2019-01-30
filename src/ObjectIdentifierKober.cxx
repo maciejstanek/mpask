@@ -1,6 +1,7 @@
 #include "mpask/ObjectIdentifierKober.hxx"
 
 #include "mpask/Exception.hxx"
+#include "mpask/LengthKober.hxx"
 
 #include <iostream>
 
@@ -32,6 +33,10 @@ namespace mpask
       auto subcode = encodeOneValue(number);
       code.insert(code.end(), subcode.begin(), subcode.end());
     }
+    int len = code.size();
+    auto lencode = LengthKober()(len);
+    code.insert(code.begin(), lencode.begin(), lencode.end());
+    code.insert(code.begin(), 0x06);
     return code;
   }
 
