@@ -81,5 +81,7 @@ TEST_F(Message_test, decode_basic)
   EXPECT_EQ(decoded.version, golden.version);
   EXPECT_EQ(decoded.community, golden.community);
   EXPECT_EQ(decoded.type, golden.type);
+  ASSERT_EQ(decoded.values.size(), 2u);
+  // TODO: Test in detail
   EXPECT_EQ(decoded.values, golden.values);
 }

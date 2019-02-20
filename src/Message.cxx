@@ -9,6 +9,7 @@
 #include "mpask/DataValue.hxx"
 #include "mpask/AliasDeclarationGrammar.hxx"
 #include "mpask/AliasDeclaration.hxx"
+#include "mpask/ObjectIdentifierDekober.hxx"
 
 #include <boost/spirit/include/qi.hpp>
 #include <iostream>
@@ -29,7 +30,50 @@ namespace mpask
       cerr << " 0x" << hex << setfill('0') << setw(2) << static_cast<int>(c);
     }
     cerr << endl;
-    // TODO: decode
+    // NOTE: This decoder is written in a very dirty fashion. I assume, that
+    // the sequence will contain at least 3 0x30 values (sequences), and two of
+    // them for most of the cases will be separated by a one byte. I just
+    // for this third 0x30 byte and discard everything before.
+    [[maybe_unused]] auto v1 = find(code.begin(), code.end(), 0x30);
+    auto v2 = find(v1 + 1, code.end(), 0x30);
+    auto v3 = find(v2 + 1, code.end(), 0x30);
+    if (v3 - v2 != 2 || v3 == code.end()) {
+      throw Exception {"DECODER FATAL ERROR"};
+    }
+    cerr << "DBG SLICE";
+    for (auto i = v3; i != code.end(); ++i) {
+      cerr << " 0x" << hex << setfill('0') << setw(2) << static_cast<int>(*i);
+    }
+    cerr << endl;
+
+    auto i = v3;
+    cerr << "WARNING: assuming one byte length in the decoding process." << endl;
+    while (i != code.end()) {
+      ++i; // skip sequence header
+      ++i; // skip total length
+      auto l = static_cast<int>(*(i + 1)) + 2; // one byte length
+      vector<unsigned char> rawoid(i, i + l);
+      cerr << "DBG raw oid";
+      for (auto r : rawoid) {
+        cerr << " 0x" << hex << setfill('0') << setw(2) << static_cast<int>(r);
+      }
+      cerr << endl;
+      auto oid = ObjectIdentifierDekober().getVector(rawoid);
+      cerr << "DBG decoded OID";
+      for (auto a : oid) {
+        cerr << " " << a;
+      }
+      cerr << endl;
+      i += l;
+      auto lv = static_cast<int>(*(i + 1)) + 2; // one byte length
+      vector<unsigned char> rawv(i, i + lv);
+      cerr << "DBG raw value";
+      for (auto r : rawv) {
+        cerr << " 0x" << hex << setfill('0') << setw(2) << static_cast<int>(r);
+      }
+      cerr << endl;
+      i += lv;
+    }
   }
 
   Message::Message
