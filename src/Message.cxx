@@ -1,8 +1,16 @@
 #include "mpask/Message.hxx"
 
 #include "mpask/LengthKober.hxx"
+#include "mpask/Exception.hxx"
 #include "mpask/ObjectIdentifierKober.hxx"
+#include "mpask/Address.hxx"
+#include "mpask/TreeBuilder.hxx"
+#include "mpask/ValueKober.hxx"
+#include "mpask/DataValue.hxx"
+#include "mpask/AliasDeclarationGrammar.hxx"
+#include "mpask/AliasDeclaration.hxx"
 
+#include <boost/spirit/include/qi.hpp>
 #include <iostream>
 #include <iomanip>
 
@@ -10,6 +18,29 @@ using namespace std;
 
 namespace mpask
 {
+  Message::Message
+    ( const std::vector<unsigned char>& code
+    , const std::shared_ptr<MIBFile>& schema_
+    )
+    : schema {schema_}
+  {
+    cerr << "parsing msg";
+    for (auto c : code) {
+      cerr << " 0x" << hex << setfill('0') << setw(2) << static_cast<int>(c);
+    }
+    cerr << endl;
+    // TODO: decode
+  }
+
+  Message::Message
+    ( const vector_pair_vector_int_string& values_
+    , const std::shared_ptr<MIBFile>& schema_
+    )
+    : values {values_}
+    , schema {schema_}
+  {
+  }
+
   vector<unsigned char>
   Message::encode() const
   {
@@ -41,6 +72,10 @@ namespace mpask
     vector<unsigned char> indexCode = {0x02, 0x01, 0x00};
     unitLength += indexCode.size();
 
+    // SCHEMA: generate a tree from schema
+    auto root = TreeBuilder{}(schema);
+    root->printHierarchy(cerr);
+
     // Varbind List
     vector<unsigned char> varbindListCode = {0x30};
     int varbindListCodeLen = 0;
@@ -64,8 +99,45 @@ namespace mpask
       cerr << "\n";
 #endif
 
+      // SCHEMA: find the value (assume string if not found)
+      TypeDeclaration d;
+      try {
+        auto x = root->findNodeByOID(identifier);
+        d = x->getSource();
+      }
+      catch (Exception& e) {
+        cerr << "Error while searching for OID \"";
+        copy(identifier.begin(), identifier.end(), ostream_iterator<int>(cerr,"."));
+        cerr << "\".\n";
+        cerr << e.what() << "\n";
+        cerr << "Assuming OCTET STRING type.\n";
+        d.baseType.name = "OBJECT-TYPE";
+        d.syntax.name.name = "OCTET STRING";
+      }
+
+      ////////////////////////////////////////////////
+
+
+      string input {"xxx ::= "s + d.syntax.name.name};
+      string::const_iterator iter = input.begin();
+      string::const_iterator end = input.end();
+      AliasDeclarationGrammar<string::const_iterator> parser;
+      boost::spirit::ascii::space_type space;
+      AliasDeclaration result;
+      bool status = phrase_parse(iter, end, parser, space, result);
+      if (!status) {
+        throw Exception {"err"};
+      }
+      // cerr << result.dataType << endl;
+      auto data = make_shared<DataValue>();
+      data->setContextAlias(result);
+      data->setValue(value);
+      auto coded = ValueKober()(data);
+
+      ////////////////////////////////////////////////
+
       // Value
-      vector<unsigned char> valueCode = encodeString(value); // TODO: encode other types too
+      vector<unsigned char> valueCode = ValueKober()(data); //encodeString(value); // TODO: encode other types too
       varbindCodeLen += valueCode.size();
 
       // Varbind (continued)
@@ -121,5 +193,23 @@ namespace mpask
     cerr << "\n";
 #endif
     return code;
+  }
+
+  bool
+  operator==(const Message& lhs, const Message& rhs)
+  {
+    if (lhs.version != rhs.version) {
+      return false;
+    }
+    if (lhs.community != rhs.community) {
+      return false;
+    }
+    if (lhs.type != rhs.type) {
+      return false;
+    }
+    if (lhs.values != rhs.values) {
+      return false;
+    }
+    return true;
   }
 }

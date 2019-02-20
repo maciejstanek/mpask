@@ -62,3 +62,11 @@ TEST_F(ObjectIdentifierDekober_test, multiple_values_one_big)
   Address golden {"", {{"", 1}, {"", 2}, {"", 3333}}, 4};
   EXPECT_EQ(address, golden);
 }
+
+TEST_F(ObjectIdentifierDekober_test, vector)
+{
+  vector<unsigned char> code = {0x06, 0x02, 0x2a, 0x03};
+  auto v = ObjectIdentifierDekober().getVector(code);
+  vector<int> golden {1, 2, 3};
+  EXPECT_EQ(v, golden);
+}

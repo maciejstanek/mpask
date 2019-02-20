@@ -42,6 +42,6 @@ namespace mpask
       }
       remainingFiles.pop();
     }
-    return move(masterStructure);
+    return masterStructure;
   }
 }

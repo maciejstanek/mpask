@@ -16,6 +16,10 @@ struct Address
   std::string label;
   vector_pair_string_int intermediateNodes;
   int value {};
+
+  Address() = default;
+  Address(const std::string&, const vector_pair_string_int&, int);
+  Address(const std::vector<int>&);
 };
 
 std::ostream& operator<<(std::ostream&, const Address&);

@@ -20,13 +20,13 @@ namespace mpask
   ValueKober::operator()(const shared_ptr<DataValue>& value) const
   {
     vector<unsigned char> code;
-    if (value->context.dataType.name.isNull) {
+    if (value->context.dataType.name.name == "NULL") {
       code = encodeNull(value);
     }
-    else if (value->context.dataType.name.isInteger) {
+    else if (value->context.dataType.name.name == "INTEGER") {
       code = encodeInteger(value);
     }
-    else if (value->context.dataType.name.isOctetString) {
+    else if (value->context.dataType.name.name == "OCTET STRING") {
       code = encodeOctetString(value);
     }
     else {

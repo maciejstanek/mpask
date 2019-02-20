@@ -1,5 +1,7 @@
 #include "mpask/Address.hxx"
 
+#include "mpask/Exception.hxx"
+
 #include <gtest/gtest.h>
 #include <sstream>
 #include <iostream>
@@ -79,4 +81,21 @@ TEST_F(Address_test, non_equal_5)
   Address a1 {"aaa", {{"bbb", 111}, {"ccc", 222}}, 333};
   Address a2 {"aaa", {{"bbb", 111}, {"ccc", 999}}, 333};
   EXPECT_NE(a1, a2);
+}
+
+TEST_F(Address_test, vect)
+{
+  Address a1 {{1, 2, 3, 4}};
+  Address a2 {"iso", {{"", 2}, {"", 3}}, 4};
+  EXPECT_EQ(a1, a2);
+}
+
+TEST_F(Address_test, vect_throw_iso)
+{
+  EXPECT_THROW(Address({2, 3, 4, 5}), Exception);
+}
+
+TEST_F(Address_test, vect_throw_len)
+{
+  EXPECT_THROW(Address({1}), Exception);
 }

@@ -54,4 +54,31 @@ namespace mpask
     code.back() &= 0x7f;
     return code;
   }
+
+  vector<unsigned char>
+  ObjectIdentifierKober::operator()(const std::vector<int>& oid) const
+  {
+    auto numbers = oid;
+    if (numbers.size() > 1) {
+      numbers[1] = 40 * numbers[0] + numbers[1];
+      numbers.erase(numbers.begin());
+    }
+    else {
+      // It is guaranteed that there is at least one number.
+      numbers[0] *= 40;
+    }
+    if (numbers[0] > 127) {
+      throw Exception("Cannot encode the first two values (40*a+b > 127).");
+    }
+    vector<unsigned char> code;
+    for(auto number : numbers) {
+      auto subcode = encodeOneValue(number);
+      code.insert(code.end(), subcode.begin(), subcode.end());
+    }
+    int len = code.size();
+    auto lencode = LengthKober()(len);
+    code.insert(code.begin(), lencode.begin(), lencode.end());
+    code.insert(code.begin(), 0x06);
+    return code;
+  }
 }

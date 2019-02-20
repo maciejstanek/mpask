@@ -63,3 +63,11 @@ TEST_F(ObjectIdentifierKober_test, multiple_values_one_big)
   decltype(code) golden = {0x06, 0x04, 0x2a, 0x9a, 0x05, 0x04};
   EXPECT_EQ(code, golden);
 }
+
+TEST_F(ObjectIdentifierKober_test, vector)
+{
+  vector<int> v {1, 2, 3};
+  auto code = ObjectIdentifierKober()(v);
+  decltype(code) golden = {0x06, 0x02, 0x2a, 0x03};
+  EXPECT_EQ(code, golden);
+}

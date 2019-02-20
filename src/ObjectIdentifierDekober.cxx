@@ -55,4 +55,51 @@ namespace mpask
     while (proceed);
     return val;
   }
+
+  unsigned long long
+  ObjectIdentifierDekober::parseLength(
+    vector<unsigned char>::const_iterator& i,
+    const vector<unsigned char>::const_iterator& end) const
+  {
+    if (i == end) {
+      throw Exception {"Unexpected end of sequence when parsing object length."};
+    }
+    unsigned long long length = *i++;
+    if (length > 0x7f) {
+      decltype(length) lengthOfLength {length & 0x7f};
+      length = 0;
+      while(lengthOfLength--) {
+        if (i == end) {
+          throw Exception {"Unexpected end of sequence when parsing object length."};
+        }
+        // TODO: Check 64 bit overflow.
+        length = (length << 8) | *i++;
+      }
+    }
+    return length;
+  }
+
+  vector<int>
+  ObjectIdentifierDekober::getVector(const vector<unsigned char>& code) const
+  {
+    if (code.size() < 3) {
+      throw Exception("Cannot decode empty OID.");
+    }
+    auto i = code.begin();
+    if (code[0] != 0x06) {
+      throw Exception("This is not an OID.");
+    }
+    auto len = parseLength(++i, code.end());
+    auto [v1, v2] = decodeFirstValue(*i++);
+    vector<int> v = {static_cast<int>(v1), static_cast<int>(v2)};
+    while (i != code.end()) {
+      v.push_back(static_cast<int>(decodeOneValue(i)));
+    }
+    if (v.size() != len + 1) {
+      throw Exception("OID length ("s + to_string(v.size()) + ")"s
+        " does not match the content length ("s + to_string(len) + ")."s);
+      // TODO: Handle one number case.
+    }
+    return v;
+  }
 }
