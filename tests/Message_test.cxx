@@ -1,6 +1,7 @@
 #include "mpask/Message.hxx"
 
 #include "mpask/Parser.hxx"
+#include "mpask/Exception.hxx"
 #include <gtest/gtest.h>
 
 using namespace std;
@@ -27,8 +28,8 @@ class Message_test : public ::testing::Test
       stringstream s {R"(
         testenv DEFINITIONS ::= BEGIN
           sub OBJECT IDENTIFIER ::= { iso 2 }
-          int OBJECT-TYPE SYNTAX INTEGER ::= { sub 3 }
-          string OBJECT-TYPE SYNTAX OCTET STRING ::= { sub 4 }
+          int OBJECT-TYPE SYNTAX INTEGER (10..20) ::= { sub 3 }
+          string OBJECT-TYPE SYNTAX OCTET STRING (SIZE (10..20)) ::= { sub 4 }
         END
       )"};
       return Parser{}(s);
@@ -55,7 +56,6 @@ TEST_F(Message_test, encode_basic)
     0x00, 0x30, 0x14, 0x30, 0x07, 0x06, 0x02, 0x2a, 0x03, 0x82, 0x01, 0xaa,
     0x30, 0x09, 0x06, 0x02, 0x2a, 0x04, 0x84, 0x03, 0x41, 0x41, 0x41,
   };
-
   EXPECT_EQ(m.encode(), golden);
 }
 
@@ -84,4 +84,36 @@ TEST_F(Message_test, decode_basic)
   ASSERT_EQ(decoded.values.size(), 2u);
   // TODO: Test in detail
   EXPECT_EQ(decoded.values, golden.values);
+
+  // TEST VALIDATION
+}
+
+TEST_F(Message_test, validate_int_range)
+{
+  Message m {
+    {{{1, 2, 3}, "170"}},
+    generateSimpleSchema()
+  };
+  try {
+    m.validate();
+    FAIL() << "should throw";
+  }
+  catch (Exception& e) {
+    EXPECT_EQ(e.what(), "Object 1.2.3. of type INTEGER does not fit in the allowed range of values (170 is not in <10, 20>)."s);
+  }
+}
+
+TEST_F(Message_test, validate_string_size)
+{
+  Message m {
+    {{{1, 2, 4}, "AAA"}},
+    generateSimpleSchema()
+  };
+  try {
+    m.validate();
+    FAIL() << "should throw";
+  }
+  catch (Exception& e) {
+    EXPECT_EQ(e.what(), "Object 1.2.4. of type OCTET STRING does not fit in the allowed size (3 is not in <10, 20>)."s);
+  }
 }

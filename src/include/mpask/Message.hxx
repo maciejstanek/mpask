@@ -24,6 +24,7 @@ struct Message
   std::vector<unsigned char> encode() const;
   Message(const std::vector<unsigned char>&, const std::shared_ptr<MIBFile>&);
   Message(const vector_pair_vector_int_string&, const std::shared_ptr<MIBFile>&);
+  void validate() const;
 
   int version {1};
   std::string community {"private"};

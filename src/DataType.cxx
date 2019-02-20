@@ -20,7 +20,7 @@ namespace mpask
     }
     integers << "\n    },";
 
-    return output << "{"
+    return output << dec << "{"
       << "\n    \"name\": \"" << type.name.name << "\","
       << "\n    \"variant\": \"" << type.variant << "\","
       << integers.str()

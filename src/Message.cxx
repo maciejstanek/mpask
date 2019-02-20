@@ -276,6 +276,66 @@ namespace mpask
     return code;
   }
 
+  void
+  Message::validate() const
+  {
+    auto root = TreeBuilder{}(schema);
+    cerr << "VALIDATION" << endl;
+
+    for (const auto& valuePair : values) {
+      auto oid = valuePair.first;
+      auto value = valuePair.second;
+
+      cerr << "DBG OID: " << oid << endl << "DBG VAL: " << value << endl;
+
+      TypeDeclaration d;
+      try {
+        auto x = root->findNodeByOID(oid);
+        d = x->getSource();
+      }
+      catch (Exception& e) {
+        cerr << "Error while searching for OID \"";
+        copy(oid.begin(), oid.end(), ostream_iterator<int>(cerr,"."));
+        cerr << "\".\n";
+        cerr << e.what() << "\n";
+        cerr << "Assuming OCTET STRING type.\n";
+        d.baseType.name = "OBJECT-TYPE";
+        d.syntax.name.name = "OCTET STRING";
+      }
+      cerr << "DBG data type = " << d << endl;
+
+      if (d.syntax.name.name == "OCTET STRING" && d.syntax.restriction.size) {
+        cerr << "VALIDATING OCTET STRING FOR SIZE" << endl;
+        int maxs = max(d.syntax.restriction.left, d.syntax.restriction.right);
+        int mins = min(d.syntax.restriction.left, d.syntax.restriction.right);
+        if (static_cast<int>(value.size()) > maxs || static_cast<int>(value.size()) < mins) {
+          ostringstream s;
+          s << "Object ";
+          copy(oid.begin(), oid.end(), ostream_iterator<int>(s,"."));
+          s << " of type " << d.syntax.name.name << " does not fit in the allowed"
+            << " size (" << value.size() << " is not in <" << mins << ", "
+            << maxs << ">).";
+          throw Exception {s.str()};
+        }
+      }
+
+      if (d.syntax.name.name == "INTEGER" && d.syntax.restriction.range) {
+        cerr << "VALIDATING INTEGER FOR RANGE" << endl;
+        int maxs = max(d.syntax.restriction.left, d.syntax.restriction.right);
+        int mins = min(d.syntax.restriction.left, d.syntax.restriction.right);
+        if (stoi(value) > maxs || stoi(value) < mins) {
+          ostringstream s;
+          s << "Object ";
+          copy(oid.begin(), oid.end(), ostream_iterator<int>(s,"."));
+          s << " of type " << d.syntax.name.name << " does not fit in the allowed"
+            << " range of values (" << value << " is not in <" << mins << ", "
+            << maxs << ">).";
+          throw Exception {s.str()};
+        }
+      }
+    }
+  }
+
   bool
   operator==(const Message& lhs, const Message& rhs)
   {
