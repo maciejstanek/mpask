@@ -106,7 +106,9 @@ namespace mpask
       }
       cerr << "DBG value = " << stringval << endl;
 
-      if (d.syntax.name.name != stringtag) {
+      if (d.syntax.name.name != stringtag
+          && !(d.syntax.name.name == "DisplayString" && stringtag == "OCTET STRING")
+          && !(d.syntax.name.name == "TimeTicks" && stringtag == "INTEGER")) {
         throw Exception {"OID suggest type \""s + d.syntax.name.name + "\" but the raw type has tag \"" + stringtag + "\"."};
       }
       values.push_back({oid, stringval});

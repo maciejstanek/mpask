@@ -23,10 +23,12 @@ namespace mpask
     if (value->context.dataType.name.name == "NULL") {
       code = encodeNull(value);
     }
-    else if (value->context.dataType.name.name == "INTEGER") {
+    else if (value->context.dataType.name.name == "INTEGER"
+        || value->context.dataType.name.name == "TimeTicks" /* FIXME */) {
       code = encodeInteger(value);
     }
-    else if (value->context.dataType.name.name == "OCTET STRING") {
+    else if (value->context.dataType.name.name == "OCTET STRING"
+        || value->context.dataType.name.name == "DisplayString" /* FIXME */) {
       code = encodeOctetString(value);
     }
     else {
