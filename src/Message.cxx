@@ -82,6 +82,7 @@ namespace mpask
         d.baseType.name = "OBJECT-TYPE";
         d.syntax.name.name = "OCTET STRING";
       }
+      cerr << "DBG data type = " << d << endl;
 
       i += l;
       auto lv = static_cast<int>(*(i + 1)) + 2; // one byte length
@@ -93,12 +94,22 @@ namespace mpask
       cerr << endl;
       i += lv;
       auto result = Dekober(rawv)();
-      // if (auto val = dynamic_pointer_cast<DataValue>(result)) {
-      // }
-      // else {
-      //   throw Exception {"Can only parse values at the moment, not sequences."};
-      // }
       cerr << "DBG result = " << *result << endl;
+      string stringval;
+      string stringtag;
+      if (auto val = dynamic_pointer_cast<DataValue>(result)) {
+        stringval = val->value;
+        stringtag = val->type;
+      }
+      else {
+        throw Exception {"Can only parse values at the moment, not sequences."};
+      }
+      cerr << "DBG value = " << stringval << endl;
+
+      if (d.syntax.name.name != stringtag) {
+        throw Exception {"OID suggest type \""s + d.syntax.name.name + "\" but the raw type has tag \"" + stringtag + "\"."};
+      }
+      values.push_back({oid, stringval});
     }
   }
 
