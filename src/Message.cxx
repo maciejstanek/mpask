@@ -10,6 +10,7 @@
 #include "mpask/AliasDeclarationGrammar.hxx"
 #include "mpask/AliasDeclaration.hxx"
 #include "mpask/ObjectIdentifierDekober.hxx"
+#include "mpask/Dekober.hxx"
 
 #include <boost/spirit/include/qi.hpp>
 #include <iostream>
@@ -48,6 +49,8 @@ namespace mpask
 
     auto i = v3;
     cerr << "WARNING: assuming one byte length in the decoding process." << endl;
+    auto root = TreeBuilder{}(schema);
+    root->printHierarchy(cerr);
     while (i != code.end()) {
       ++i; // skip sequence header
       ++i; // skip total length
@@ -64,6 +67,22 @@ namespace mpask
         cerr << " " << a;
       }
       cerr << endl;
+
+      TypeDeclaration d;
+      try {
+        auto x = root->findNodeByOID(oid);
+        d = x->getSource();
+      }
+      catch (Exception& e) {
+        cerr << "Error while searching for OID \"";
+        copy(oid.begin(), oid.end(), ostream_iterator<int>(cerr,"."));
+        cerr << "\".\n";
+        cerr << e.what() << "\n";
+        cerr << "Assuming OCTET STRING type.\n";
+        d.baseType.name = "OBJECT-TYPE";
+        d.syntax.name.name = "OCTET STRING";
+      }
+
       i += l;
       auto lv = static_cast<int>(*(i + 1)) + 2; // one byte length
       vector<unsigned char> rawv(i, i + lv);
@@ -73,6 +92,13 @@ namespace mpask
       }
       cerr << endl;
       i += lv;
+      auto result = Dekober(rawv)();
+      // if (auto val = dynamic_pointer_cast<DataValue>(result)) {
+      // }
+      // else {
+      //   throw Exception {"Can only parse values at the moment, not sequences."};
+      // }
+      cerr << "DBG result = " << *result << endl;
     }
   }
 
