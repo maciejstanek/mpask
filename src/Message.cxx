@@ -31,6 +31,15 @@ namespace mpask
       cerr << " 0x" << hex << setfill('0') << setw(2) << static_cast<int>(c);
     }
     cerr << endl;
+    // TODO: set request 
+    auto j = code.begin() + 4; // skip header
+    version = static_cast<int>(*j);
+    cerr << "DBG version = " << version << endl;
+    j += 2;
+    j += static_cast<int>(*j) + 1;
+    auto msgt = static_cast<int>(*j) & 0x3;
+    type = static_cast<MessageType>(msgt);
+    cerr << "DBG msgt = " << msgt << endl;
     // NOTE: This decoder is written in a very dirty fashion. I assume, that
     // the sequence will contain at least 3 0x30 values (sequences), and two of
     // them for most of the cases will be separated by a one byte. I just
@@ -50,7 +59,7 @@ namespace mpask
     auto i = v3;
     cerr << "WARNING: assuming one byte length in the decoding process." << endl;
     auto root = TreeBuilder{}(schema);
-    root->printHierarchy(cerr);
+    /* root->printHierarchy(cerr); */
     while (i != code.end()) {
       ++i; // skip sequence header
       ++i; // skip total length
@@ -140,7 +149,8 @@ namespace mpask
     len += communityCode.size();
     
     // SNMP PDU
-    vector<unsigned char> unitCode = {0xa0};
+    vector<unsigned char> unitCode = {static_cast<unsigned char>(0xa0 | static_cast<int>(type))};
+    cerr << "DBG ENCODED TYPE " << dec << static_cast<int>(type) << " as 0x" << hex << static_cast<int>(unitCode[0]) << endl;
     int unitLength = 0;
 
     // Request ID
@@ -157,7 +167,7 @@ namespace mpask
 
     // SCHEMA: generate a tree from schema
     auto root = TreeBuilder{}(schema);
-    root->printHierarchy(cerr);
+    /* root->printHierarchy(cerr); */
 
     // Varbind List
     vector<unsigned char> varbindListCode = {0x30};

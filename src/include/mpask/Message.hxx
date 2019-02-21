@@ -12,7 +12,7 @@ namespace mpask {
 
 typedef std::vector<std::pair<std::vector<int>, std::string>> vector_pair_vector_int_string;
 
-enum class MessageType {
+enum class MessageType : unsigned char {
   GetRequest = 0,
   GetNextRequest = 1,
   GetResponse = 2,

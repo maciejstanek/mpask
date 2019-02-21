@@ -20,6 +20,7 @@ struct Address
   Address() = default;
   Address(const std::string&, const vector_pair_string_int&, int);
   Address(const std::vector<int>&);
+  std::vector<int> toVector() const;
 };
 
 std::ostream& operator<<(std::ostream&, const Address&);

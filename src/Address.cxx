@@ -7,6 +7,17 @@ using namespace std;
 
 namespace mpask
 {
+  vector<int>
+  Address::toVector() const
+  {
+    vector<int> v = {1};
+    for (const auto& [label, index] : intermediateNodes) {
+      v.push_back(index);
+    }
+    v.push_back(value);
+    return v;
+  }
+
   Address::Address(const std::vector<int>& v)
   {
     if (v.size() <= 1u) {
